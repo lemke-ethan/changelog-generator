@@ -14,7 +14,8 @@
     "check-linting": "npx eslint ./src/",
     "format": "npx prettier --write src/",
     "check-formatting": "npx prettier --check src/",
-    "test": "npx jest --watch"
+    "test": "npx jest --watch",
+    "test:ci": "npx jest --collectCoverage --forceExit"
   },
   "repository": {
     "type": "git",
