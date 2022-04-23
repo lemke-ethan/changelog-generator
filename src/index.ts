@@ -1,1 +1,3 @@
-// TODO
+import { change } from "./change/index";
+
+change();

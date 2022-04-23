@@ -8,13 +8,13 @@
     "ccg": "./src/index.js"
   },
   "scripts": {
-    "build": "echo \"TODO\" && exit 1",
+    "build": "npx tsc",
     "start": "echo \"TODO\" && exit 1",
     "lint": "npx eslint --fix ./src/",
     "check-linting": "npx eslint ./src/",
     "format": "npx prettier --write src/",
     "check-formatting": "npx prettier --check src/",
-    "test": "echo \"TODO\" && exit 1"
+    "test": "npx jest --watch"
   },
   "repository": {
     "type": "git",
@@ -41,10 +41,13 @@
   "author": "Ethan Lemke",
   "license": "MIT",
   "devDependencies": {
+    "@types/jest": "^27.4.1",
     "@typescript-eslint/eslint-plugin": "^5.20.0",
     "@typescript-eslint/parser": "^5.20.0",
     "eslint": "^8.14.0",
     "eslint-config-prettier": "^8.5.0",
+    "jest": "^27.5.1",
+    "ts-jest": "^27.1.4",
     "prettier": "2.6.2",
     "typescript": "^4.6.3"
   }
