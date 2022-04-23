@@ -1,4 +1,4 @@
-import { change } from "../index";
+import { change } from "../change";
 
 it("does not throw", () => {
   expect(() => {

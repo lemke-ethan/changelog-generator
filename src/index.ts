@@ -1,3 +1,3 @@
-import { change } from "./change/index";
+import { change } from "./commands/change";
 
 change();
