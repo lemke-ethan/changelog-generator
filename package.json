@@ -9,7 +9,6 @@
   },
   "scripts": {
     "build": "npx tsc",
-    "start": "echo \"TODO\" && exit 1",
     "lint": "npx eslint --fix ./src/",
     "check-linting": "npx eslint ./src/",
     "format": "npx prettier --write src/",
