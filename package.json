@@ -1,0 +1,51 @@
+{
+  "name": "@crazy/changelog-generator",
+  "version": "0.0.1",
+  "description": "A changelog generator not authored by git data but by the developer implementing the fix, feature, breaking change, ...",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "ccg": "./src/index.js"
+  },
+  "scripts": {
+    "build": "echo \"TODO\" && exit 1",
+    "start": "echo \"TODO\" && exit 1",
+    "lint": "npx eslint --fix ./src/",
+    "check-linting": "npx eslint ./src/",
+    "format": "npx prettier --write src/",
+    "check-formatting": "npx prettier --check src/",
+    "test": "echo \"TODO\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lemke-ethan/changelog-generator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lemke-ethan/changelog-generator/issues"
+  },
+  "homepage": "https://github.com/lemke-ethan/changelog-generator#readme",
+  "keywords": [
+    "changelog",
+    "generator",
+    "cli",
+    "semver",
+    "changelog-generator",
+    "changeset",
+    "changelist",
+    "npm",
+    "changes",
+    "node",
+    "markdown",
+    "json"
+  ],
+  "author": "Ethan Lemke",
+  "license": "MIT",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.20.0",
+    "@typescript-eslint/parser": "^5.20.0",
+    "eslint": "^8.14.0",
+    "eslint-config-prettier": "^8.5.0",
+    "prettier": "2.6.2",
+    "typescript": "^4.6.3"
+  }
+}
