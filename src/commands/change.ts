@@ -14,7 +14,7 @@
 export function change(args?: {
   /** Verify the change file has been generated and is valid. */
   verify?: boolean;
-  /** Show this commands documentation and exit. */
+  /** Show this commands documentation and exits. */
   help?: boolean;
 }) {
   /* 
