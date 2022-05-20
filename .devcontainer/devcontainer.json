@@ -1,11 +1,29 @@
 {
-  "build": { "dockerfile": "Dockerfile" },
-  "extensions": [
-    "streetsidesoftware.code-spell-checker",
-    "eamodio.gitlens",
-    "davidanson.vscode-markdownlint",
-    "esbenp.prettier-vscode",
-    "dbaeumer.vscode-eslint",
-    "ms-vscode-remote.vscode-remote-extensionpack"
-  ]
+  "build": { "dockerfile": "./Dockerfile" },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "streetsidesoftware.code-spell-checker",
+        "eamodio.gitlens",
+        "davidanson.vscode-markdownlint",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "ms-vscode-remote.vscode-remote-extensionpack"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[markdown]": {
+          "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
+        },
+        "typescript.tsdk": "node_modules/typescript/lib"
+      }
+    }
+  }
 }
