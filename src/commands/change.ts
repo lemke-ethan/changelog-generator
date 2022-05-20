@@ -1,14 +1,14 @@
 /**
- * Checks for changes from "HEAD" to remote "main" branch. If changes exist then the user will be 
- * prompted with a series of questions about what kind of change is being made to generate a change 
- * file in the format of <branch name>-<timestamp>.json. If no changes are detected then nothing 
+ * Checks for changes from "HEAD" to remote "main" branch. If changes exist then the user will be
+ * prompted with a series of questions about what kind of change is being made to generate a change
+ * file in the format of <branch name>-<timestamp>.json. If no changes are detected then nothing
  * happens.
- * 
+ *
  * If a change file already exists then the user will be shown the existing change comments from
- * each change file and they will be prompted to append to the existing comments or do nothing. 
- * Appending to the existing comments will 
- * 
- * The change files will be generated in a `./changes` directory. This directory and its contents 
+ * each change file and they will be prompted to append to the existing comments or do nothing.
+ * Appending to the existing comments will
+ *
+ * The change files will be generated in a `./changes` directory. This directory and its contents
  * needs to be tracked.
  */
 export function change(args?: {

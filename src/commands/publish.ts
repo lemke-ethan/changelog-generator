@@ -3,8 +3,8 @@
 /**
  * Combines all of the existing changes files into the change log and compresses the version bumps
  * in the change files down to a single version, which is used to update the package.json version.
- * 
- * If `CHANGELOG.md` and `CHANGELOG.json` files do not exist at the root of your project then they 
+ *
+ * If `CHANGELOG.md` and `CHANGELOG.json` files do not exist at the root of your project then they
  * will be created.
  */
 export function publish(args?: {
