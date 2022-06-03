@@ -22,3 +22,22 @@ export const ChangeTypeString: {
   [ChangeType.PATCH]: "Patch",
   [ChangeType.NONE]: "None",
 };
+
+/** Readable name of the change command. */
+export const ChangeCommandName = "change";
+
+/** Readable description of the change command. */
+export const ChangeCommandDescription =
+  "Generates a change file if a change is detected.";
+
+/** Readable flags of each option in the change command. */
+export const ChangeCommandOptionFlag = {
+  verify: "--verify",
+};
+
+/** Readable descriptions of each option in the change command. */
+export const ChangeCommandOptionDescription: {
+  [Property in keyof typeof ChangeCommandOptionFlag]: string;
+} = {
+  verify: "Verify the change file has been generated and is valid.",
+};
