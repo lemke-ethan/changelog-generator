@@ -1,3 +1,5 @@
+import { spawn } from "child_process";
+
 /**
  * Checks for changes from "HEAD" to remote "main" branch. If changes exist and a change file
  * doesn't exist then the user will be prompted with a series of questions about what kind of change
@@ -22,8 +24,9 @@ export function change(args?: {
       1. get the remote name using the current branch name: `git config branch.<branch name>.remote`
       1. get the "main" origin branch by parsing out "HEAD branch:" from `git remote show <remote name>`
       1. check for a diff from HEAD against "main" origin branch `git diff HEAD..<remote name>/<main branch name> --shortstat`
-      1. if a diff does not exist then exit
+      1. if a diff does not exist then exit 
       1. otherwise,
+       1. if `verify` is true, then throw an error
        1. show the user what branch they are on
        1. show the user what the target branch is (i.e. "main" branch name with remote name)
        1. check for existing change files for the project 
@@ -41,4 +44,26 @@ export function change(args?: {
   */
 
   throw new Error("TODO");
+}
+
+async function getCurrentGitBranchName(): Promise<string> {
+  return runCommand({ command: "git", args: ["branch", "--show-current"] });
+}
+
+/** Runs a command and returns its output. */
+async function runCommand(args: {
+  command: string;
+  args?: readonly string[];
+}): Promise<string> {
+  // TODO: finish: https://nodejs.org/dist/latest-v16.x/docs/api/child_process.html#child_processspawncommand-args-options
+  const command = spawn(args.command, args.args);
+  return new Promise((resolve, reject) => {
+    command.addListener("close", (code, signal) => {
+      if (code !== 0) {
+        reject("failed to run command.");
+      } else {
+        resolve("TODO");
+      }
+    });
+  });
 }
