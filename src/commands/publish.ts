@@ -5,7 +5,7 @@
  * in the change files down to a single version, which is used to update the package.json version.
  *
  * If `CHANGELOG.md` and `CHANGELOG.json` files do not exist at the root of your project then they
- * will be created.
+ * will be created. These files need to be tracked in version control.
  */
 export function publish(args?: {
   /** Show this commands documentation and exits. */
