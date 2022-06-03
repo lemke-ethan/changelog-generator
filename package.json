@@ -1,5 +1,5 @@
 {
-  "name": "@crazy/changelog-generator",
+  "name": "@mfbtech/changelog-generator",
   "version": "0.0.1",
   "description": "A changelog generator not authored by git data but by the developer implementing the fix, feature, breaking change, ...",
   "main": "./dist/index.js",
@@ -18,12 +18,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lemke-ethan/changelog-generator.git"
+    "url": "git+https://github.com/MFB-Technologies-Inc/changelog-generator.git"
   },
   "bugs": {
-    "url": "https://github.com/lemke-ethan/changelog-generator/issues"
+    "url": "https://github.com/MFB-Technologies-Inc/changelog-generator/issues"
   },
-  "homepage": "https://github.com/lemke-ethan/changelog-generator#readme",
+  "homepage": "https://github.com/MFB-Technologies-Inc/changelog-generator#readme",
   "keywords": [
     "changelog",
     "generator",
@@ -38,7 +38,7 @@
     "markdown",
     "json"
   ],
-  "author": "Ethan Lemke",
+  "author": "MFB Technologies, Inc.",
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^27.4.1",
