@@ -1,4 +1,4 @@
-# @crazy/changelog-generator
+# @mfbtech/changelog-generator
 
 A changelog generator not authored by git data but by the developer implementing the fix, feature, breaking change, ...
 
