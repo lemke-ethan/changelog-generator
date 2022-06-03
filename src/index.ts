@@ -16,7 +16,3 @@ program
   .action(change);
 
 program.parse(process.argv);
-
-console.log({
-  options: program.opts(),
-});
