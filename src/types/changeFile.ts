@@ -1,9 +1,13 @@
+// TODO: don't use enums! string literals and types
 /** The different types of changes. */
 export enum ChangeType {
   MAJOR = "MAJOR",
   MINOR = "MINOR",
   PATCH = "PATCH",
+  /** Not rendered in the change log md */
   NONE = "NONE",
+  /** Not rendered in the change log md */
+  DEPENDENCY = "DEPENDENCY",
 }
 export type ChangeTypeStringLiteral = `${ChangeType}`;
 

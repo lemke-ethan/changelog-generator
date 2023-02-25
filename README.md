@@ -13,7 +13,7 @@ The general workflow of a developer would be something like,
 1. Create a pull requests and merge the changes. `ccg change --verify` can be run in CI/CD to verify that a change file has been generated.
 1. When publishing the package, run `ccg publish` to bump the package.json version and update the changelog file with all of the change files.
 
-Change files contain date/time, a short description of the change and an associated version bump for the change (i.e. major, minor or patch).
+Change files contain date/time, a short description of the change and an associated version bump for the change (i.e. major, minor, patch, or none).
 
 TODO: add links to CLI docs
 
