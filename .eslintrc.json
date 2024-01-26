@@ -13,9 +13,23 @@
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": "latest"
+    "ecmaVersion": "latest",
+    "project": ["./tsconfig.json"]
   },
   "plugins": ["@typescript-eslint"],
-  "rules": {},
+  "rules": {
+    "@typescript-eslint/no-explicit-any": 0,
+    "@typescript-eslint/consistent-type-definitions": [1, "type"],
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        "selector": "parameter",
+        "format": ["camelCase"],
+        "leadingUnderscore": "allow"
+      }
+    ],
+    "@typescript-eslint/typedef": 0,
+    "@typescript-eslint/no-floating-promises": "warn"
+  },
   "ignorePatterns": ["src/**/*.test.ts"]
 }
