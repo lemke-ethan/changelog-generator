@@ -31,12 +31,6 @@ TODO: add links to CLI docs
 
 TODO:link to changelog
 
-## Development Environment
-
-[Clone repo into container volume.](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/lemke-ethan/changelog-generator.git)
-
-[Cline init-source branch into container volume](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/lemke-ethan/changelog-generator/tree/init-source)
-
 ## Publishing
 
 TODO
