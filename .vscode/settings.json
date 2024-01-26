@@ -1,15 +1,61 @@
 {
-  "editor.formatOnSave": true,
+  "editor.detectIndentation": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.formatOnSave": true,
+  "editor.rulers": [100],
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.tsdk": "./node_modules/typescript/lib",
+  "psi-header.templates": [
+    {
+      "language": "*",
+      "template": [" Copyright <<year>> <<company>>"]
+    }
+  ],
+  "psi-header.config": {
+    "company": "MFB Technologies, Inc.",
+    "forceToTop": true,
+    "blankLinesAfter": 1
   },
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "psi-header.changes-tracking": {
+    "isActive": true,
+    "enforceHeader": true,
+    "excludeGlob": [
+      "**/settings.json",
+      "**/.gitignore",
+      "**/.env*",
+      "**/*.yml",
+      "**/Dockerfile",
+      "**/*.config.js",
+      "**/*.config.*.js"
+    ],
+    "exclude": ["jsonc", "json", "markdown"]
   },
-  "[markdown]": {
-    "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
+  "psi-header.lang-config": [
+    {
+      "language": ".js",
+      "begin": "",
+      "end": "",
+      "prefix": "//",
+      "beforeHeader": ["#!/usr/bin/env node"]
+    },
+    {
+      "language": ".ts",
+      "begin": "",
+      "end": "",
+      "prefix": "//"
+    },
+    {
+      "language": ".sh",
+      "begin": "",
+      "end": "",
+      "prefix": "#",
+      "beforeHeader": ["#!/usr/bin/env bash"]
+    }
+  ],
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/coverage": true
   },
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "editor.rulers": [100]
+  "editor.tabSize": 2
 }
