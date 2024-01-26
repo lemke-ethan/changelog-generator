@@ -1,4 +1,6 @@
-import { spawn } from "child_process";
+// Copyright 2024 MFB Technologies, Inc.
+
+import { spawn } from "child_process"
 
 /**
  * Checks for changes from "HEAD" to remote "main" branch. If changes exist and a change file
@@ -16,8 +18,8 @@ import { spawn } from "child_process";
  */
 export function change(args?: {
   /** Verify the change file has been generated and is valid. */
-  verify?: boolean;
-}) {
+  verify?: boolean
+}): void {
   /* 
     TODO:
       1. get the current branch name: `git branch --show-current`
@@ -43,27 +45,27 @@ export function change(args?: {
       1. generate a new change file with file name <branch name>-<timestamp>.json in ./changes/
   */
 
-  throw new Error("TODO");
+  throw new Error("TODO")
 }
 
 async function getCurrentGitBranchName(): Promise<string> {
-  return runCommand({ command: "git", args: ["branch", "--show-current"] });
+  return runCommand({ command: "git", args: ["branch", "--show-current"] })
 }
 
 /** Runs a command and returns its output. */
 async function runCommand(args: {
-  command: string;
-  args?: readonly string[];
+  command: string
+  args?: readonly string[]
 }): Promise<string> {
   // TODO: finish: https://nodejs.org/dist/latest-v16.x/docs/api/child_process.html#child_processspawncommand-args-options
-  const command = spawn(args.command, args.args);
+  const command = spawn(args.command, args.args)
   return new Promise((resolve, reject) => {
-    command.addListener("close", (code, signal) => {
+    command.addListener("close", code => {
       if (code !== 0) {
-        reject("failed to run command.");
+        reject("failed to run command.")
       } else {
-        resolve("TODO");
+        resolve("TODO")
       }
-    });
-  });
+    })
+  })
 }

@@ -1,3 +1,5 @@
+// Copyright 2024 MFB Technologies, Inc.
+
 // TODO: incorporate npm publish command
 
 /**
@@ -9,10 +11,10 @@
  */
 export function publish(args?: {
   /** Show this commands documentation and exits. */
-  help?: boolean;
+  help?: boolean
   /** Attempts to update the projects package.json version, respectively. */
-  apply?: boolean;
-}) {
+  apply?: boolean
+}): void {
   /*
     TODO:
       1. check for changes files in the current project
@@ -34,5 +36,5 @@ export function publish(args?: {
       1. overwrite/create the CHANGELOG.md with parsed json data
       1. if `args.apply` then attempt to update the package.json version number, log an error if we fail
   */
-  throw new Error("TODO");
+  throw new Error("TODO")
 }

@@ -1,3 +1,5 @@
+// Copyright 2024 MFB Technologies, Inc.
+
 /** The different types of changes. */
 export const changeTypeEnum = {
   MAJOR: "MAJOR",
@@ -6,18 +8,18 @@ export const changeTypeEnum = {
   /** Not rendered in the change log md */
   NONE: "NONE",
   /** Not rendered in the change log md */
-  DEPENDENCY: "DEPENDENCY",
+  DEPENDENCY: "DEPENDENCY"
 } as const
-export type ChangeType = typeof changeTypeEnum[keyof typeof changeTypeEnum];
+export type ChangeType = (typeof changeTypeEnum)[keyof typeof changeTypeEnum]
 
 /** Represents a change that can be recorded in a {@link ChangeFile}. */
 export type Change = {
   packageName: string
   comment: string
   type: ChangeType
-};
+}
 
 /** Represents a change file. */
 export type ChangeFile = {
   changes: Change[]
-};
+}

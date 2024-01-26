@@ -1,8 +1,10 @@
-import { ChangeType, changeTypeEnum } from "../types/changeFile";
+// Copyright 2024 MFB Technologies, Inc.
+
+import { ChangeType, changeTypeEnum } from "../types/changeFile"
 
 /** Readable descriptions of each {@link changeTypeEnum}. */
 export const ChangeTypeDescription: {
-  [Property in ChangeType]: string;
+  [Property in ChangeType]: string
 } = {
   [changeTypeEnum.MAJOR]:
     "Indicates that these changes are incompatible API changes.",
@@ -19,35 +21,35 @@ export const ChangeTypeDescription: {
 
     this probably does not make sense to add because there isn't an api command for updating package versions (e.g., `rush upgrade`)
     */
-  [changeTypeEnum.DEPENDENCY]: "Information about package dependency changes.",
-};
+  [changeTypeEnum.DEPENDENCY]: "Information about package dependency changes."
+}
 
 /** Readable names of each {@link changeTypeEnum}. */
 export const ChangeTypeString: {
-  [Property in ChangeType]: string;
+  [Property in ChangeType]: string
 } = {
   [changeTypeEnum.MAJOR]: "Major",
   [changeTypeEnum.MINOR]: "Minor",
   [changeTypeEnum.PATCH]: "Patch",
   [changeTypeEnum.NONE]: "None",
-  [changeTypeEnum.DEPENDENCY]: "Dependency",
-};
+  [changeTypeEnum.DEPENDENCY]: "Dependency"
+}
 
 /** Readable name of the change command. */
-export const ChangeCommandName = "change";
+export const ChangeCommandName = "change"
 
 /** Readable description of the change command. */
 export const ChangeCommandDescription =
-  "Generates a change file if a change is detected.";
+  "Generates a change file if a change is detected."
 
 /** Readable flags of each option in the change command. */
 export const ChangeCommandOptionFlag = {
-  verify: "--verify",
-};
+  verify: "--verify"
+}
 
 /** Readable descriptions of each option in the change command. */
 export const ChangeCommandOptionDescription: {
-  [Property in keyof typeof ChangeCommandOptionFlag]: string;
+  [Property in keyof typeof ChangeCommandOptionFlag]: string
 } = {
-  verify: "Verify the change file has been generated and is valid.",
-};
+  verify: "Verify the change file has been generated and is valid."
+}
