@@ -1,8 +1,8 @@
-import { ChangeTypeStringLiteral } from "./changeFile";
+import { ChangeType } from "./changeFile"
 
 /** Represents a collection of comments in a change log entry. */
 export type ChangeLogEntryComments = {
-  [Property in ChangeTypeStringLiteral]?: { comment: string }[];
+  [Property in ChangeType]?: { comment: string }[];
 };
 
 /** Represents an entry in the change log. */

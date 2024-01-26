@@ -1,16 +1,16 @@
-import { ChangeType, ChangeTypeStringLiteral } from "../types/changeFile";
+import { ChangeType, changeTypeEnum } from "../types/changeFile";
 
-/** Readable descriptions of each {@link ChangeType}. */
+/** Readable descriptions of each {@link changeTypeEnum}. */
 export const ChangeTypeDescription: {
-  [Property in ChangeTypeStringLiteral]: string;
+  [Property in ChangeType]: string;
 } = {
-  [ChangeType.MAJOR]:
+  [changeTypeEnum.MAJOR]:
     "Indicates that these changes are incompatible API changes.",
-  [ChangeType.MINOR]:
+  [changeTypeEnum.MINOR]:
     "Indicates that these changes add functionality in a backwards compatible manner.",
-  [ChangeType.PATCH]:
+  [changeTypeEnum.PATCH]:
     "Indicates that these changes fix bugs in a backwards compatible manner.",
-  [ChangeType.NONE]:
+  [changeTypeEnum.NONE]:
     "Indicates that these changes make changes to the source code that do not effect the user (e.g. change eslint rules, change a readme file, ...).",
   /*
     auto generated and added to the change log json.
@@ -19,18 +19,18 @@ export const ChangeTypeDescription: {
 
     this probably does not make sense to add because there isn't an api command for updating package versions (e.g., `rush upgrade`)
     */
-  [ChangeType.DEPENDENCY]: "Information about package dependency changes.",
+  [changeTypeEnum.DEPENDENCY]: "Information about package dependency changes.",
 };
 
-/** Readable names of each {@link ChangeType}. */
+/** Readable names of each {@link changeTypeEnum}. */
 export const ChangeTypeString: {
-  [Property in ChangeTypeStringLiteral]: string;
+  [Property in ChangeType]: string;
 } = {
-  [ChangeType.MAJOR]: "Major",
-  [ChangeType.MINOR]: "Minor",
-  [ChangeType.PATCH]: "Patch",
-  [ChangeType.NONE]: "None",
-  [ChangeType.DEPENDENCY]: "Dependency",
+  [changeTypeEnum.MAJOR]: "Major",
+  [changeTypeEnum.MINOR]: "Minor",
+  [changeTypeEnum.PATCH]: "Patch",
+  [changeTypeEnum.NONE]: "None",
+  [changeTypeEnum.DEPENDENCY]: "Dependency",
 };
 
 /** Readable name of the change command. */

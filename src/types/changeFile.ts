@@ -1,24 +1,23 @@
-// TODO: don't use enums! string literals and types
 /** The different types of changes. */
-export enum ChangeType {
-  MAJOR = "MAJOR",
-  MINOR = "MINOR",
-  PATCH = "PATCH",
+export const changeTypeEnum = {
+  MAJOR: "MAJOR",
+  MINOR: "MINOR",
+  PATCH: "PATCH",
   /** Not rendered in the change log md */
-  NONE = "NONE",
+  NONE: "NONE",
   /** Not rendered in the change log md */
-  DEPENDENCY = "DEPENDENCY",
-}
-export type ChangeTypeStringLiteral = `${ChangeType}`;
+  DEPENDENCY: "DEPENDENCY",
+} as const
+export type ChangeType = typeof changeTypeEnum[keyof typeof changeTypeEnum];
 
 /** Represents a change that can be recorded in a {@link ChangeFile}. */
 export type Change = {
-  packageName: string;
-  comment: string;
-  type: ChangeType;
+  packageName: string
+  comment: string
+  type: ChangeType
 };
 
 /** Represents a change file. */
 export type ChangeFile = {
-  changes: Change[];
+  changes: Change[]
 };
