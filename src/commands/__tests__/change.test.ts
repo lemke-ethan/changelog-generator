@@ -2,8 +2,6 @@
 
 import { change } from "../change"
 
-it("does not throw", () => {
-  expect(() => {
-    change()
-  }).not.toThrow()
+it("does not throw", async () => {
+  await expect(change()).resolves.not.toThrow()
 })
