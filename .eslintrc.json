@@ -29,7 +29,8 @@
       }
     ],
     "@typescript-eslint/typedef": 0,
-    "@typescript-eslint/no-floating-promises": "warn"
+    "@typescript-eslint/no-floating-promises": "warn",
+    "@typescript-eslint/no-unused-vars": "warn"
   },
   "ignorePatterns": ["src/**/*.test.ts"]
 }
