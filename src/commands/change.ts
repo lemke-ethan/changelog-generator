@@ -16,10 +16,10 @@ import { spawn } from "child_process"
  * The change files will be generated in a `./changes` directory. This directory and its contents
  * needs to be tracked.
  */
-export function change(args?: {
+export async function change(args?: {
   /** Verify the change file has been generated and is valid. */
   verify?: boolean
-}): void {
+}): Promise<void> {
   /* 
     TODO:
       1. get the current branch name: `git branch --show-current`
@@ -45,11 +45,42 @@ export function change(args?: {
       1. generate a new change file with file name <branch name>-<timestamp>.json in ./changes/
   */
 
-  throw new Error("TODO")
+  const currentBranchName = await getCurrentGitBranchName()
+  const remoteName = await getRemoteName(currentBranchName)
+  const headBranchName = await getHeadBranchName(remoteName)
+  // TODO: finish implementation
+  console.log({ currentBranchName, remoteName, headBranchName })
 }
 
 async function getCurrentGitBranchName(): Promise<string> {
   return runCommand({ command: "git", args: ["branch", "--show-current"] })
+}
+
+async function getRemoteName(currentBranchName: string): Promise<string> {
+  return runCommand({
+    command: "git",
+    args: ["config", `branch.${currentBranchName}.remote`]
+  })
+}
+
+async function showRemoteOrigin(remoteName: string): Promise<string> {
+  return runCommand({
+    command: "git",
+    args: ["remote", "show", remoteName]
+  })
+}
+
+async function getHeadBranchName(remoteName: string): Promise<string> {
+  const remoteOrigin = await showRemoteOrigin(remoteName)
+  const headBranchKey = "HEAD branch: "
+  const newLineChar = "\n"
+  const headBranchName = remoteOrigin
+    .split(newLineChar)
+    .find(line => line.includes(headBranchKey))
+  if (headBranchName === undefined) {
+    throw new Error("unable to find the head branch name.")
+  }
+  return headBranchName.trim().replace(headBranchKey, "")
 }
 
 /** Runs a command and returns its output. */
@@ -57,15 +88,40 @@ async function runCommand(args: {
   command: string
   args?: readonly string[]
 }): Promise<string> {
-  // TODO: finish: https://nodejs.org/dist/latest-v16.x/docs/api/child_process.html#child_processspawncommand-args-options
   const command = spawn(args.command, args.args)
   return new Promise((resolve, reject) => {
-    command.addListener("close", code => {
+    let result = ""
+    command.on("error", err => {
+      reject("command failed: failed to start the subprocess: " + err.message)
+    })
+    command.on("close", code => {
       if (code !== 0) {
-        reject("failed to run command.")
+        reject("command failed with exit code " + code)
       } else {
-        resolve("TODO")
+        resolve(result)
       }
     })
+    command.stdout.on("data", (data: unknown) => {
+      if (!hasToStringMethod(data)) {
+        reject("unknown response data: " + JSON.stringify(data))
+        command.kill(1)
+        return
+      }
+      result += data.toString().trim()
+    })
+    command.stderr.on("data", data => {
+      reject(`command failed: ${data}`)
+      command.kill(1)
+    })
   })
+}
+
+// TODO: move to utils module
+function hasToStringMethod(obj: unknown): obj is { toString: () => string } {
+  return (
+    typeof obj === "object" &&
+    obj !== null &&
+    "toString" in obj &&
+    typeof obj.toString === "function"
+  )
 }
