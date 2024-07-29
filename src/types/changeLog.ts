@@ -1,6 +1,6 @@
 // Copyright 2024 MFB Technologies, Inc.
 
-import { ChangeType } from "./changeFile"
+import { ChangeType } from "./changeFile.js"
 
 /** Represents a collection of comments in a change log entry. */
 export type ChangeLogEntryComments = {

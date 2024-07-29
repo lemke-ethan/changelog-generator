@@ -15,11 +15,23 @@ The general workflow of a developer would be something like,
 
 Change files contain date/time, a short description of the change and an associated version bump for the change (i.e. major, minor, patch, or none).
 
-TODO: add links to CLI docs
+<!-- TODO: update before pr -->
+
+```text
+Usage: ccg [options] [command]
+
+Options:
+  -h, --help        display help for command
+
+Commands:
+  change [options]  Generates a change file if a change is detected.
+  help [command]    display help for command
+```
 
 ## Scripts
 
 - `build`: Builds the CLI.
+- `ccg`: Run the built CLI.
 - `lint`: Fixes all lint errors.
 - `check-linting`: Checks for lint errors without fixing them.
 - `format`: Fixes all format errors.

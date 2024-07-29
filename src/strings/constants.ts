@@ -1,6 +1,6 @@
 // Copyright 2024 MFB Technologies, Inc.
 
-import { ChangeType, changeTypeEnum } from "../types/changeFile"
+import { ChangeType, changeTypeEnum } from "../types/changeFile.js"
 
 /** Readable descriptions of each {@link changeTypeEnum}. */
 export const ChangeTypeDescription: {

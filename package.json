@@ -2,13 +2,14 @@
   "name": "@mfbtech/changelog-generator",
   "version": "0.0.1",
   "description": "A changelog generator not authored by git data but by the developer implementing the fix, feature, breaking change, ...",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./out/index.js",
   "bin": {
-    "ccg": "./src/index.js"
+    "ccg": "./out/index.js"
   },
+  "type": "module",
   "scripts": {
-    "build": "npx tsc",
+    "build": "npx tsc -p ./tsconfig.prod.json",
+    "ccg": "node ./out/index.js",
     "lint": "npx eslint --fix ./src/",
     "check-linting": "npx eslint ./src/",
     "format": "npx prettier --write src/",
@@ -41,17 +42,18 @@
   "author": "MFB Technologies, Inc.",
   "license": "MIT",
   "devDependencies": {
-    "@types/jest": "~29.5.11",
-    "@typescript-eslint/eslint-plugin": "~6.19.1",
-    "@typescript-eslint/parser": "~6.19.1",
-    "eslint": "~8.56.0",
-    "eslint-config-prettier": "~9.1.0",
-    "jest": "~29.7.0",
-    "prettier": "~3.2.4",
-    "ts-jest": "~29.1.2",
-    "typescript": "5.3.3"
+    "@types/jest": "29.5.12",
+    "@types/node": "20.14.12",
+    "@typescript-eslint/eslint-plugin": "7.17.0",
+    "@typescript-eslint/parser": "7.17.0",
+    "eslint": "8.57.0",
+    "eslint-config-prettier": "9.1.0",
+    "jest": "29.7.0",
+    "prettier": "3.3.3",
+    "ts-jest": "29.2.3",
+    "typescript": "5.5.4"
   },
   "dependencies": {
-    "commander": "~11.1.0"
+    "commander": "12.1.0"
   }
 }
