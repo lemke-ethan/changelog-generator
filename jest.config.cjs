@@ -11,7 +11,6 @@ module.exports = {
   collectCoverageFrom: ["<rootDir>/src/**"],
   testMatch: ["<rootDir>/src/**/*.(spec|test).ts?(x)"],
   transform: {
-    // TODO: finish transforms with babel to fix "SyntaxError: Cannot use import statement outside a module" error
     ...createDefaultEsmPreset().transform
   },
   moduleNameMapper: {
