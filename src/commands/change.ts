@@ -1,6 +1,9 @@
 // Copyright 2024 MFB Technologies, Inc.
 
 import { spawn } from "child_process"
+import * as fileService from "fs"
+import * as path from "path"
+import { __dirname } from "../utils/esmDirname.js"
 
 /**
  * Checks for changes from "HEAD" to remote "main" branch. If changes exist and a change file
@@ -13,8 +16,12 @@ import { spawn } from "child_process"
  * Appending to the existing comments will prompt the user with a series of questions and generate a
  * new (additional) change file in the respective format.
  *
- * The change files will be generated in a `./changes` directory. This directory and its contents
- * needs to be tracked.
+ * The change files will be generated in a `./changes` directory with `[branch name]_[date/time]`,
+ * where the branch name uses numbers, letters and "-"s as separators and an example of the
+ * date/time format is "yyyy-mm-dd-hh-mm". This directory and its contents needs to be tracked.
+ *
+ * If the user does not specify a message for the change file then a default change file will be
+ * created.
  */
 export async function change(args?: {
   /** Verify the change file has been generated and is valid. */
@@ -28,7 +35,8 @@ export async function change(args?: {
       1. check for a diff from HEAD against "main" origin branch `git diff HEAD..<remote name>/<main branch name> --shortstat`
       1. if a diff does not exist then exit 
       1. otherwise,
-       1. if `verify` is true, then throw an error
+      1. if `verify` is true, then throw an error
+    =>
        1. show the user what branch they are on
        1. show the user what the target branch is (i.e. "main" branch name with remote name)
        1. check for existing change files for the project 
@@ -48,10 +56,35 @@ export async function change(args?: {
   const currentBranchName = await getCurrentGitBranchName()
   const remoteName = await getRemoteName(currentBranchName)
   const headBranchName = await getHeadBranchName(remoteName)
+  console.log(`The target branch is ${remoteName}/${headBranchName}`)
+  const projectName = await getCurrentProjectName()
+  const hasChange = await checkForChanges({
+    remoteName,
+    headBranchName
+  })
+
+  if (!hasChange) {
+    console.log(
+      `No changes were detected when comparing branch ${currentBranchName} against ${remoteName}/${headBranchName}.`
+    )
+    return
+  }
+  if (args?.verify === true) {
+    throw new Error(
+      "Changes were detected but no change files! Please run `ccg change` to generate change files."
+    )
+  }
+
   // TODO: finish implementation
-  console.log({ currentBranchName, remoteName, headBranchName })
+  console.log({
+    currentBranchName,
+    remoteName,
+    headBranchName,
+    isChange: hasChange
+  })
 }
 
+// TODO: move these are related functions into a git service
 async function getCurrentGitBranchName(): Promise<string> {
   return runCommand({ command: "git", args: ["branch", "--show-current"] })
 }
@@ -83,6 +116,7 @@ async function getHeadBranchName(remoteName: string): Promise<string> {
   return headBranchName.trim().replace(headBranchKey, "")
 }
 
+// TODO: move into service
 /** Runs a command and returns its output. */
 async function runCommand(args: {
   command: string
@@ -123,5 +157,59 @@ function hasToStringMethod(obj: unknown): obj is { toString: () => string } {
     obj !== null &&
     "toString" in obj &&
     typeof obj.toString === "function"
+  )
+}
+
+/**
+ * Checks for changes between the current branch to the remote head branch.
+ *
+ * @returns `true` if there are changes, otherwise `false`.
+ */
+async function checkForChanges(args: {
+  remoteName: string
+  headBranchName: string
+}): Promise<boolean> {
+  /*
+    - `--shortstat` summarizes the changes. e.g., "27 files changed, 5743 insertions(+), 2 deletions(-)" 
+    - if there are no changes then "" is returned
+   */
+  const output = await runCommand({
+    command: "git",
+    args: ["diff", "--shortstat", `${args.remoteName}/${args.headBranchName}`]
+  })
+  return output.trim().length > 0
+}
+
+// TODO: move into an npm service
+async function getCurrentProjectName(): Promise<string> {
+  const projectPackageJsonPath = path.resolve(__dirname, "../", "package.json")
+  const rawPackageJson = await readJson(projectPackageJsonPath)
+  if (!isPackageJson(rawPackageJson)) {
+    throw new Error(`Invalid package.json at ${projectPackageJsonPath}.`)
+  }
+  return rawPackageJson.name
+}
+
+async function readJson(path: string): Promise<unknown> {
+  return new Promise((resolve, reject) => {
+    fileService.readFile(path, { encoding: "utf8" }, (error, data) => {
+      if (error !== null) {
+        reject(error)
+        return
+      }
+      const result = JSON.parse(data)
+      resolve(result)
+    })
+  })
+}
+type PackageJson = {
+  name: string
+}
+function isPackageJson(obj: unknown): obj is PackageJson {
+  return (
+    typeof obj === "object" &&
+    obj !== null &&
+    "name" in obj &&
+    typeof obj.name === "string"
   )
 }
