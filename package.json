@@ -15,7 +15,8 @@
     "format": "npx prettier --write src/",
     "check-formatting": "npx prettier --check src/",
     "test": "npx jest --watch",
-    "test:ci": "npx jest --collectCoverage --forceExit"
+    "test:ci": "npx jest --collectCoverage --forceExit",
+    "package": "node ./scripts/package.js"
   },
   "repository": {
     "type": "git",
