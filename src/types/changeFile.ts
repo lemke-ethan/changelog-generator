@@ -21,5 +21,6 @@ export type Change = {
 
 /** Represents a change file. */
 export type ChangeFile = {
+  /** Collection of changes recorded in this change file. Typically it is only one change. */
   changes: Change[]
 }
