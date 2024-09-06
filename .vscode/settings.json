@@ -58,5 +58,8 @@
     "**/dist": true,
     "**/coverage": true
   },
-  "editor.tabSize": 2
+  "editor.tabSize": 2,
+  "markdown.updateLinksOnFileMove.enableForDirectories": true,
+  "markdown.editor.pasteUrlAsFormattedLink.enabled": "never",
+  "markdown.editor.updateLinksOnPaste.enabled": false
 }
