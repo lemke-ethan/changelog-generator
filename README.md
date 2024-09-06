@@ -28,6 +28,20 @@ Commands:
   help [command]    display help for command
 ```
 
+### Configuration
+
+```json
+{
+  "repoUrl": "https://github.com/MFB-Technologies-Inc/changelog-generator.git",
+  "branchName": "develop",
+  "remoteName": "origin"
+}
+```
+
+- `repoUrl`: the remote URL of the repository.
+- `branchName`: the default branch name to be compared against the local branch for changes.
+- `remoteName`: the default remote name for comparing against.
+
 ## Scripts
 
 - `build`: Builds the CLI.
