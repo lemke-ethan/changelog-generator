@@ -38,6 +38,7 @@
     "out/**/*",
     "jest.config.cjs",
     "babel.config.cjs",
-    "scripts/**/*"
+    "scripts/**/*",
+    "rollup.config.js"
   ]
 }

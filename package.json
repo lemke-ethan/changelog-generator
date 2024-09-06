@@ -2,14 +2,14 @@
   "name": "@mfbtech/changelog-generator",
   "version": "0.0.1",
   "description": "A changelog generator not authored by git data but by the developer implementing the fix, feature, breaking change, ...",
-  "main": "./out/index.js",
+  "main": "./out/index.cjs",
   "bin": {
-    "ccg": "./out/index.js"
+    "ccg": "./out/index.cjs"
   },
   "type": "module",
   "scripts": {
-    "build": "npx tsc -p ./tsconfig.prod.json",
-    "ccg": "node ./out/index.js",
+    "build": "rollup --config rollup.config.js",
+    "ccg": "node ./out/index.cjs",
     "lint": "npx eslint --fix ./src/",
     "check-linting": "npx eslint ./src/",
     "format": "npx prettier --write src/",
@@ -18,6 +18,9 @@
     "test:ci": "npx jest --collectCoverage --forceExit",
     "package": "node ./scripts/package.js"
   },
+  "files": [
+    "out/"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MFB-Technologies-Inc/changelog-generator.git"
