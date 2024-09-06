@@ -34,13 +34,15 @@ Commands:
 {
   "repoUrl": "https://github.com/MFB-Technologies-Inc/changelog-generator.git",
   "branchName": "develop",
-  "remoteName": "origin"
+  "remoteName": "origin",
+  "packagePath": "./package.json"
 }
 ```
 
 - `repoUrl`: the remote URL of the repository.
 - `branchName`: the default branch name to be compared against the local branch for changes.
 - `remoteName`: the default remote name for comparing against.
+- `packagePath`: the path to the `package.json` of the package that should be checked for changes.
 
 ## Scripts
 
