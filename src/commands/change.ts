@@ -4,6 +4,8 @@ import { spawn } from "child_process"
 import * as fileService from "fs"
 import * as path from "path"
 import { __dirname } from "../utils/esmDirname.js"
+import { exitProcessWithError } from "../utils/process.js"
+import { ChangeFile } from "../types/changeFile.js"
 
 /**
  * Checks for changes from "HEAD" to remote "main" branch. If changes exist and a change file
@@ -36,15 +38,16 @@ export async function change(args?: {
       1. if a diff does not exist then exit 
       1. otherwise,
       1. if `verify` is true, then throw an error
-    =>
-       1. show the user what branch they are on
-       1. show the user what the target branch is (i.e. "main" branch name with remote name)
+      1. show the user what branch they are on
+      1. show the user what the target branch is (i.e. "main" branch name with remote name)
+      =>
        1. check for existing change files for the project 
        1. if there are no existing change files then prompt the user
        1. otherwise, 
         1. show the user the existing comments from the existing change files
         1. prompt the user do nothing or append comments
         1. if the user wants to append comments, then prompt the user to generate a new change file
+       1. load the config and use those values
 
       prompting the user to generate a change file or append comments looks like this
 
@@ -54,9 +57,12 @@ export async function change(args?: {
   */
 
   const currentBranchName = await getCurrentGitBranchName()
+  // TODO: verify against the remote name in the config
   const remoteName = await getRemoteName(currentBranchName)
+  // TODO: use the branch name from the config instead
   const headBranchName = await getHeadBranchName(remoteName)
-  console.log(`The target branch is ${remoteName}/${headBranchName}`)
+  console.log(`target branch: ${remoteName}/${headBranchName}`)
+  // TODO: pass the package.json path from the config
   const projectName = await getCurrentProjectName()
   const hasChange = await checkForChanges({
     remoteName,
@@ -70,18 +76,14 @@ export async function change(args?: {
     return
   }
   if (args?.verify === true) {
-    throw new Error(
-      "Changes were detected but no change files! Please run `ccg change` to generate change files."
-    )
+    exitProcessWithError({
+      error:
+        "Changes were detected but no change files! Please run `ccg change` to generate change files."
+    })
   }
 
-  // TODO: finish implementation
-  console.log({
-    currentBranchName,
-    remoteName,
-    headBranchName,
-    isChange: hasChange
-  })
+  console.log(`current branch: ${remoteName}/${currentBranchName}`)
+  const hasChangeFiles = await getChangeFiles({})
 }
 
 // TODO: move these are related functions into a git service
@@ -178,6 +180,30 @@ async function checkForChanges(args: {
     args: ["diff", "--shortstat", `${args.remoteName}/${args.headBranchName}`]
   })
   return output.trim().length > 0
+}
+
+async function getChangeFiles(args: {
+  // Use this to build the change file directory path
+  pathToProjectRootDirectory: string
+  // use this to check for change files associated with the current branch
+  currentBranchName: string
+}): Promise<ChangeFile[]> {
+  // TODO: finish implementing
+  /*
+    what if you are on branch A, you generate change files, merge A into your main branch, then push
+    more changes to A and run the cli?
+
+    should you see the change files for the changes you already made? or, should the changes on your
+    main branch be excluded (i.e. if the main branch has those change files already in it, then don't
+    show skips)?
+
+    https://git-scm.com/docs/git-diff
+
+    `git diff origin/main --compact-summary` can be used to list the files with their relative paths.
+    if there are no change files in that list, then we should prompt to generate some. if there are
+    one or more change files in that list then prompt with skip.
+  */
+  return []
 }
 
 // TODO: move into an npm service
