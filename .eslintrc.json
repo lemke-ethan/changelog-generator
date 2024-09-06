@@ -36,6 +36,7 @@
     "src/**/*.test.ts",
     "out/**/*",
     "jest.config.cjs",
-    "babel.config.cjs"
+    "babel.config.cjs",
+    "scripts/**/*"
   ]
 }

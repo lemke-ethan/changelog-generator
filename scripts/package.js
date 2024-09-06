@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 // Copyright 2024 MFB Technologies, Inc.
 
-// TODO: add a tsconfig for scripts
-
 const path = require("path")
 const fs = require("fs")
 const childProcess = require("child_process")
