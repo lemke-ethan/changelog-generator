@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 // Copyright 2024 MFB Technologies, Inc.
 
 import { change } from "./commands/change.js"

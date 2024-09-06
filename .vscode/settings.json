@@ -42,7 +42,8 @@
       "language": ".ts",
       "begin": "",
       "end": "",
-      "prefix": "//"
+      "prefix": "//",
+      "beforeHeader": ["#!/usr/bin/env node"]
     },
     {
       "language": ".sh",
