@@ -57,10 +57,11 @@
     "prettier": "3.3.3",
     "rollup": "4.21.2",
     "ts-jest": "29.2.4",
-    "typescript": "5.5.4",
-    "tslib": "2.7.0"
+    "tslib": "2.7.0",
+    "typescript": "5.5.4"
   },
   "dependencies": {
+    "@inquirer/prompts": "6.0.1",
     "commander": "12.1.0"
   }
 }
