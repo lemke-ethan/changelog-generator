@@ -70,6 +70,7 @@ export async function change(args?: {
   const headBranchName = await getHeadBranchName(remoteName)
   // TODO: pass the package.json path from the config
   const projectName = await getCurrentProjectName()
+  // TODO: what does the response look like when there are no changes?
   const changeSummary = await getCompactChangeSummary({
     currentBranchName,
     remoteName,
