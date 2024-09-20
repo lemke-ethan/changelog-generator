@@ -5,7 +5,14 @@ import * as fileService from "fs"
 import * as path from "path"
 import { __dirname } from "../utils/esmDirname.js"
 import { exitProcessWithError } from "../utils/process.js"
-import { ChangeFile } from "../types/changeFile.js"
+import {
+  ChangeFile,
+  changeTypeEnum,
+  getChangeTypeDescription
+} from "../types/changeFile.js"
+import { selectionPrompt, textPrompt } from "../utils/prompt.js"
+
+const changeFileDirectoryRoot = "change" + path.sep
 
 /**
  * Checks for changes from "HEAD" to remote "main" branch. If changes exist and a change file
@@ -18,7 +25,7 @@ import { ChangeFile } from "../types/changeFile.js"
  * Appending to the existing comments will prompt the user with a series of questions and generate a
  * new (additional) change file in the respective format.
  *
- * The change files will be generated in a `./changes` directory with `[branch name]_[date/time]`,
+ * The change files will be generated in a `changes/` directory with `[branch name]_[date/time]`,
  * where the branch name uses numbers, letters and "-"s as separators and an example of the
  * date/time format is "yyyy-mm-dd-hh-mm". This directory and its contents needs to be tracked.
  *
@@ -40,8 +47,8 @@ export async function change(args?: {
       1. if `verify` is true, then throw an error
       1. show the user what branch they are on
       1. show the user what the target branch is (i.e. "main" branch name with remote name)
-      =>
-       1. check for existing change files for the project 
+      1. check for existing change files for the project 
+    =>
        1. if there are no existing change files then prompt the user
        1. otherwise, 
         1. show the user the existing comments from the existing change files
@@ -61,15 +68,15 @@ export async function change(args?: {
   const remoteName = await getRemoteName(currentBranchName)
   // TODO: use the branch name from the config instead
   const headBranchName = await getHeadBranchName(remoteName)
-  console.log(`target branch: ${remoteName}/${headBranchName}`)
   // TODO: pass the package.json path from the config
   const projectName = await getCurrentProjectName()
-  const hasChange = await checkForChanges({
+  const changeSummary = await getCompactChangeSummary({
+    currentBranchName,
     remoteName,
-    headBranchName
+    targetBranch: headBranchName
   })
 
-  if (!hasChange) {
+  if (changeSummary.changedFilePaths.length < 1) {
     console.log(
       `No changes were detected when comparing branch ${currentBranchName} against ${remoteName}/${headBranchName}.`
     )
@@ -83,7 +90,54 @@ export async function change(args?: {
   }
 
   console.log(`current branch: ${remoteName}/${currentBranchName}`)
-  const hasChangeFiles = await getChangeFiles({})
+  console.log(`target branch: ${remoteName}/${headBranchName}`)
+  const currentChangeFilePaths = changeSummary.changedFilePaths.filter(
+    changedFilePath => changedFilePath.startsWith(changeFileDirectoryRoot)
+  )
+  // prompt the user
+  if (currentChangeFilePaths.length < 1) {
+    const changeMessage = await textPrompt({
+      message: "Describe changes or leave blank for no changes:"
+    })
+    const patch = await selectionPrompt({
+      message: "Select change type:",
+      options: [
+        {
+          value: changeTypeEnum.MAJOR,
+          name: changeTypeEnum.MAJOR,
+          description: getChangeTypeDescription(changeTypeEnum.MAJOR)
+        },
+        {
+          value: changeTypeEnum.MINOR,
+          name: changeTypeEnum.MINOR,
+          description: getChangeTypeDescription(changeTypeEnum.MINOR)
+        },
+        {
+          value: changeTypeEnum.PATCH,
+          name: changeTypeEnum.PATCH,
+          description: getChangeTypeDescription(changeTypeEnum.PATCH)
+        },
+        {
+          value: changeTypeEnum.NONE,
+          name: changeTypeEnum.NONE,
+          description: getChangeTypeDescription(changeTypeEnum.NONE)
+        }
+      ]
+    })
+    const changeFileContent: ChangeFile = {
+      changes: [
+        {
+          packageName: projectName,
+          comment: changeMessage,
+          type: patch
+        }
+      ]
+    }
+    // TODO: save
+    console.log(changeFileContent)
+  } else {
+    throw new Error("not implemented")
+  }
 }
 
 // TODO: move these are related functions into a git service
@@ -204,6 +258,57 @@ async function getChangeFiles(args: {
     one or more change files in that list then prompt with skip.
   */
   return []
+}
+
+const newlineRegex = new RegExp(/\n/)
+const singleSpaceChar = " "
+/**
+ * Gets the collection of file paths that have been changed between the current checked out branch
+ * and the remote branch.
+ *
+ * @returns `true` if there are changes, otherwise `false`.
+ */
+async function getCompactChangeSummary(args: {
+  /** The name of the current branch that is checked out. */
+  currentBranchName: string
+  /** The name of the remote. */
+  remoteName: string
+  /** The name of the branch you want to compare against. */
+  targetBranch: string
+}): Promise<{
+  /** Paths of the changed files relative to the root directory of the repository. */
+  changedFilePaths: string[]
+  /**
+   * A short summary of changes.
+   *
+   * @example
+   * ```text
+   * 2 files changed, 2 insertions(+), 1 deletions(-)
+   * ```
+   */
+  shortStat: string | undefined
+}> {
+  const output = await runCommand({
+    command: "git",
+    args: [
+      "diff",
+      `${args.remoteName}/${args.targetBranch}...${args.currentBranchName}`,
+      "--compact-summary"
+    ]
+  })
+  const rawList = output.split(newlineRegex)
+  const shortStat = rawList[rawList.length - 1]
+  const changedFilePaths = rawList
+    .slice(0, rawList.length - 1)
+    .map(rawSummaryRow => rawSummaryRow.trim())
+    .map(rawSummaryRow => {
+      const firstSpaceIndex = rawSummaryRow.indexOf(singleSpaceChar)
+      return rawSummaryRow.slice(0, firstSpaceIndex)
+    })
+  return {
+    changedFilePaths,
+    shortStat
+  }
 }
 
 // TODO: move into an npm service
