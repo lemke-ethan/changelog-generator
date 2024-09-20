@@ -24,3 +24,23 @@ export type ChangeFile = {
   /** Collection of changes recorded in this change file. Typically it is only one change. */
   changes: Change[]
 }
+
+/** Get the short description of most change types. Defaults to an empty string. */
+export function getChangeTypeDescription(changeType: ChangeType): string {
+  switch (changeType) {
+    case changeTypeEnum.MAJOR: {
+      return "changes that break compatibility"
+    }
+    case changeTypeEnum.MINOR: {
+      return "changes that add functionality in a backward compatible manner"
+    }
+    case changeTypeEnum.PATCH: {
+      return "changes that fix things in a backward compatible manner"
+    }
+    case changeTypeEnum.NONE: {
+      return "changes that do not require a release (e.g. updated the README.md, ...)"
+    }
+    default:
+      return ""
+  }
+}
