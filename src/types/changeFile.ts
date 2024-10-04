@@ -11,6 +11,11 @@ export const changeTypeEnum = {
   DEPENDENCY: "DEPENDENCY"
 } as const
 export type ChangeType = (typeof changeTypeEnum)[keyof typeof changeTypeEnum]
+export function isChangeType(x: unknown): x is ChangeType {
+  return (
+    typeof x === "string" && Object.values<string>(changeTypeEnum).includes(x)
+  )
+}
 
 /** Represents a change that can be recorded in a {@link ChangeFile}. */
 export type Change = {
@@ -18,11 +23,32 @@ export type Change = {
   comment: string
   type: ChangeType
 }
+export function isChange(x: unknown): x is Change {
+  return (
+    typeof x === "object" &&
+    x !== null &&
+    "packageName" in x &&
+    typeof x.packageName === "string" &&
+    "comment" in x &&
+    typeof x.comment === "string" &&
+    "type" in x &&
+    isChangeType(x.type)
+  )
+}
 
 /** Represents a change file. */
 export type ChangeFile = {
   /** Collection of changes recorded in this change file. Typically it is only one change. */
   changes: Change[]
+}
+export function isChangeFile(x: unknown): x is ChangeFile {
+  return (
+    typeof x === "object" &&
+    x !== null &&
+    "changes" in x &&
+    Array.isArray(x.changes) &&
+    x.changes.every(isChange)
+  )
 }
 
 /** Get the short description of most change types. Defaults to an empty string. */
