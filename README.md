@@ -9,7 +9,7 @@ This package helps developers manage changelogs and package version while keepin
 The general workflow of a developer would be something like,
 
 1. Branch off of the main development branch of the repository.
-1. Commit changes and, before making a pull request, run `ccg change` to generate a change file.
+1. Commit changes and, before making a pull request, run `ccg change` next to the `package.json` of your project to generate a change file.
 1. Create a pull requests and merge the changes. `ccg change --verify` can be run in CI/CD to verify that a change file has been generated.
 1. When publishing the package, run `ccg publish` to bump the package.json version and update the changelog file with all of the change files.
 
