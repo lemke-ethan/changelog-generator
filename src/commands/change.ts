@@ -6,7 +6,8 @@ import { exitProcessWithError } from "../utils/process.js"
 import {
   ChangeFile,
   changeTypeEnum,
-  getChangeTypeDescription
+  getChangeTypeDescription,
+  isChangeFile
 } from "../types/changeFile.js"
 import { selectionPrompt, textPrompt } from "../utils/prompt.js"
 import { readJson, writeJson } from "../services/fileSystem.js"
@@ -112,7 +113,20 @@ export async function change(args?: {
       file: changeFileContent
     })
   } else {
-    throw new Error("not implemented")
+    console.log(projectName, "Found existing change logs:")
+    const loadedChangeFiles = await Promise.all(
+      currentChangeFilePaths.map(readChangeFile)
+    )
+    console.log(
+      loadedChangeFiles.reduce((listOfFormattedChanges, loadedChangeFile) => {
+        const listAdditions = loadedChangeFile.changes
+          .map(change => {
+            return `- ${change.type}: ${change.comment}`
+          })
+          .join("\n\t")
+        return listOfFormattedChanges + listAdditions
+      }, "")
+    )
   }
 }
 
@@ -387,4 +401,12 @@ function isPackageJson(obj: unknown): obj is PackageJson {
     "name" in obj &&
     typeof obj.name === "string"
   )
+}
+
+async function readChangeFile(path: string): Promise<ChangeFile> {
+  const rawChangeFile = await readJson(path)
+  if (isChangeFile(rawChangeFile)) {
+    return rawChangeFile
+  }
+  throw new Error(`Invalid change file found: ${path}.`)
 }
