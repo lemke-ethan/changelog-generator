@@ -48,8 +48,8 @@ export async function change(args?: {
       1. show the user what branch they are on
       1. show the user what the target branch is (i.e. "main" branch name with remote name)
       1. check for existing change files for the project 
-    =>
-       1. if there are no existing change files then prompt the user
+      1. if there are no existing change files then prompt the user
+      =>
        1. otherwise, 
         1. show the user the existing comments from the existing change files
         1. prompt the user do nothing or append comments
@@ -83,18 +83,25 @@ export async function change(args?: {
     )
     return
   }
+  const currentChangeFilePaths = changeSummary.changedFilePaths.filter(
+    changedFilePath => changedFilePath.startsWith(changeFileDirectoryRoot)
+  )
   if (args?.verify === true) {
-    exitProcessWithError({
-      error:
-        "Changes were detected but no change files! Please run `ccg change` to generate change files."
-    })
+    if (currentChangeFilePaths.length < 1) {
+      exitProcessWithError({
+        error:
+          "Changes were detected but no change files! Please run `ccg change` to generate change files."
+      })
+    } else {
+      console.log(
+        "Verified; the current branch has changes and has one or more change files."
+      )
+      return
+    }
   }
 
   console.log(`current branch: ${remoteName}/${currentBranchName}`)
   console.log(`target branch: ${remoteName}/${headBranchName}`)
-  const currentChangeFilePaths = changeSummary.changedFilePaths.filter(
-    changedFilePath => changedFilePath.startsWith(changeFileDirectoryRoot)
-  )
   // prompt the user
   if (currentChangeFilePaths.length < 1) {
     const changeMessage = await textPrompt({
