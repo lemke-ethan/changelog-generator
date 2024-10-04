@@ -105,43 +105,7 @@ export async function change(args?: {
   console.log(`target branch: ${remoteName}/${headBranchName}`)
   // prompt the user
   if (currentChangeFilePaths.length < 1) {
-    const changeMessage = await textPrompt({
-      message: "Describe changes or leave blank for no changes:"
-    })
-    const patch = await selectionPrompt({
-      message: "Select change type:",
-      options: [
-        {
-          value: changeTypeEnum.MAJOR,
-          name: changeTypeEnum.MAJOR,
-          description: getChangeTypeDescription(changeTypeEnum.MAJOR)
-        },
-        {
-          value: changeTypeEnum.MINOR,
-          name: changeTypeEnum.MINOR,
-          description: getChangeTypeDescription(changeTypeEnum.MINOR)
-        },
-        {
-          value: changeTypeEnum.PATCH,
-          name: changeTypeEnum.PATCH,
-          description: getChangeTypeDescription(changeTypeEnum.PATCH)
-        },
-        {
-          value: changeTypeEnum.NONE,
-          name: changeTypeEnum.NONE,
-          description: getChangeTypeDescription(changeTypeEnum.NONE)
-        }
-      ]
-    })
-    const changeFileContent: ChangeFile = {
-      changes: [
-        {
-          packageName: projectName,
-          comment: changeMessage,
-          type: patch
-        }
-      ]
-    }
+    const changeFileContent = await promptToCreateChangeFile(projectName)
     await saveChangeFile({
       projectRootDir: projectRootDirectory,
       currentBranchName,
@@ -149,6 +113,48 @@ export async function change(args?: {
     })
   } else {
     throw new Error("not implemented")
+  }
+}
+
+async function promptToCreateChangeFile(
+  projectName: string
+): Promise<ChangeFile> {
+  const changeMessage = await textPrompt({
+    message: "Describe changes or leave blank for no changes:"
+  })
+  const patch = await selectionPrompt({
+    message: "Select change type:",
+    options: [
+      {
+        value: changeTypeEnum.MAJOR,
+        name: changeTypeEnum.MAJOR,
+        description: getChangeTypeDescription(changeTypeEnum.MAJOR)
+      },
+      {
+        value: changeTypeEnum.MINOR,
+        name: changeTypeEnum.MINOR,
+        description: getChangeTypeDescription(changeTypeEnum.MINOR)
+      },
+      {
+        value: changeTypeEnum.PATCH,
+        name: changeTypeEnum.PATCH,
+        description: getChangeTypeDescription(changeTypeEnum.PATCH)
+      },
+      {
+        value: changeTypeEnum.NONE,
+        name: changeTypeEnum.NONE,
+        description: getChangeTypeDescription(changeTypeEnum.NONE)
+      }
+    ]
+  })
+  return {
+    changes: [
+      {
+        packageName: projectName,
+        comment: changeMessage,
+        type: patch
+      }
+    ]
   }
 }
 
