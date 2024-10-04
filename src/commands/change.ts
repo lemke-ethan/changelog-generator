@@ -72,6 +72,7 @@ export async function change(args?: {
   const projectRootDirectory = process.cwd()
   const projectName = await getCurrentProjectName(projectRootDirectory)
   // TODO: what does the response look like when there are no changes?
+  // TODO: need to also check against the current branches remote branch to see what change files have already been pushed... probably need to check against local commits and staged changes as well
   const changeSummary = await getCompactChangeSummary({
     currentBranchName,
     remoteName,
@@ -127,6 +128,7 @@ export async function change(args?: {
         return listOfFormattedChanges + listAdditions
       }, "")
     )
+    throw new Error("TODO: finish")
   }
 }
 
