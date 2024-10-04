@@ -1,9 +1,7 @@
 // Copyright 2024 MFB Technologies, Inc.
 
 import { spawn } from "child_process"
-import * as fileService from "fs"
 import * as path from "path"
-import { __dirname } from "../utils/esmDirname.js"
 import { exitProcessWithError } from "../utils/process.js"
 import {
   ChangeFile,
@@ -11,8 +9,9 @@ import {
   getChangeTypeDescription
 } from "../types/changeFile.js"
 import { selectionPrompt, textPrompt } from "../utils/prompt.js"
+import { readJson, writeJson } from "../services/fileSystem.js"
 
-const changeFileDirectoryRoot = "change" + path.sep
+const changeFileDirectoryRoot = "changes" + path.sep
 
 /**
  * Checks for changes from "HEAD" to remote "main" branch. If changes exist and a change file
@@ -68,8 +67,9 @@ export async function change(args?: {
   const remoteName = await getRemoteName(currentBranchName)
   // TODO: use the branch name from the config instead
   const headBranchName = await getHeadBranchName(remoteName)
-  // TODO: pass the package.json path from the config
-  const projectName = await getCurrentProjectName()
+  // assume script is run from the root of the project
+  const projectRootDirectory = process.cwd()
+  const projectName = await getCurrentProjectName(projectRootDirectory)
   // TODO: what does the response look like when there are no changes?
   const changeSummary = await getCompactChangeSummary({
     currentBranchName,
@@ -83,6 +83,7 @@ export async function change(args?: {
     )
     return
   }
+  // intentionally not checking untracked files, so the user can (if they want) generate "duplicates"
   const currentChangeFilePaths = changeSummary.changedFilePaths.filter(
     changedFilePath => changedFilePath.startsWith(changeFileDirectoryRoot)
   )
@@ -141,8 +142,11 @@ export async function change(args?: {
         }
       ]
     }
-    // TODO: save
-    console.log(changeFileContent)
+    await saveChangeFile({
+      projectRootDir: projectRootDirectory,
+      currentBranchName,
+      file: changeFileContent
+    })
   } else {
     throw new Error("not implemented")
   }
@@ -319,9 +323,47 @@ async function getCompactChangeSummary(args: {
   }
 }
 
+/*
+ * The change files will be generated in a `changes/` directory with `[branch name]_[date/time]`,
+ * where the branch name uses numbers, letters and "-"s as separators and an example of the
+ * date/time format is "yyyy-mm-dd-hh-mm". This directory and its contents needs to be tracked.
+ */
+async function saveChangeFile(args: {
+  projectRootDir: string
+  currentBranchName: string
+  file: ChangeFile
+}): Promise<void> {
+  const fileNameDelimiter = "_"
+  const changeFileFullRootDir = path.join(
+    args.projectRootDir,
+    changeFileDirectoryRoot
+  )
+  const dateTimeStr = getFormattedChangeFileDateTimeStamp()
+  const branchNameFormatted = getFormattedChangeFileBranchName(
+    args.currentBranchName
+  )
+  const changeFileFileNameWithExtension = `${branchNameFormatted}${fileNameDelimiter}${dateTimeStr}.json`
+  await writeJson({
+    path: changeFileFullRootDir,
+    fileName: changeFileFileNameWithExtension,
+    data: args.file
+  })
+}
+
+function getFormattedChangeFileDateTimeStamp(): string {
+  const nowUtc = new Date()
+  return `${nowUtc.getFullYear()}-${nowUtc.getMonth()}-${nowUtc.getDate()}-${nowUtc.getHours()}-${nowUtc.getMinutes()}`
+}
+
+function getFormattedChangeFileBranchName(branchName: string): string {
+  const dashChar = "-"
+  const notAlphaNumOrDashChar = new RegExp("[^a-zA-Z0-9-]")
+  return branchName.split(notAlphaNumOrDashChar).join(dashChar)
+}
+
 // TODO: move into an npm service
-async function getCurrentProjectName(): Promise<string> {
-  const projectPackageJsonPath = path.resolve(__dirname, "../", "package.json")
+async function getCurrentProjectName(projectRootDir: string): Promise<string> {
+  const projectPackageJsonPath = path.resolve(projectRootDir, "package.json")
   const rawPackageJson = await readJson(projectPackageJsonPath)
   if (!isPackageJson(rawPackageJson)) {
     throw new Error(`Invalid package.json at ${projectPackageJsonPath}.`)
@@ -329,18 +371,6 @@ async function getCurrentProjectName(): Promise<string> {
   return rawPackageJson.name
 }
 
-async function readJson(path: string): Promise<unknown> {
-  return new Promise((resolve, reject) => {
-    fileService.readFile(path, { encoding: "utf8" }, (error, data) => {
-      if (error !== null) {
-        reject(error)
-        return
-      }
-      const result = JSON.parse(data)
-      resolve(result)
-    })
-  })
-}
 type PackageJson = {
   name: string
 }
