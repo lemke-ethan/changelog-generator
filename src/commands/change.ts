@@ -10,7 +10,7 @@ import {
   getChangeTypeDescription,
   isChangeFile
 } from "../types/changeFile.js"
-import { selectionPrompt, textPrompt } from "../utils/prompt.js"
+import { booleanPrompt, selectionPrompt, textPrompt } from "../utils/prompt.js"
 import {
   readJson,
   writeJson,
@@ -125,7 +125,7 @@ export async function change(args?: {
       file: changeFileContent
     })
   } else {
-    console.log(projectName, "Found existing change logs:")
+    console.log(projectName, "existing change logs:")
     const loadedChangeFiles = await Promise.all(
       allChangeFilePaths.map(readChangeFile)
     )
@@ -133,13 +133,21 @@ export async function change(args?: {
       loadedChangeFiles.reduce((listOfFormattedChanges, loadedChangeFile) => {
         const listAdditions = loadedChangeFile.changes
           .map(change => {
-            return `- ${change.type}: ${change.comment}`
+            return `  - ${change.type}: ${change.comment.length < 1 ? "<no comment>" : change.comment}\n`
           })
-          .join("\n\t")
+          .join("")
         return listOfFormattedChanges + listAdditions
       }, "")
     )
-    throw new Error("TODO: finish")
+    const changeFileContent =
+      await promptToAppendChangeFileToExisting(projectName)
+    if (changeFileContent !== undefined) {
+      await saveChangeFile({
+        projectRootDir: projectRootDirectory,
+        currentBranchName,
+        file: changeFileContent
+      })
+    }
   }
 }
 
@@ -185,6 +193,17 @@ async function promptToCreateChangeFile(
         type: patch
       }
     ]
+  }
+}
+
+async function promptToAppendChangeFileToExisting(
+  projectName: string
+): Promise<ChangeFile | undefined> {
+  const appendComments = await booleanPrompt({
+    message: "Would you like to append comments or skip?"
+  })
+  if (appendComments === true) {
+    return promptToCreateChangeFile(projectName)
   }
 }
 
