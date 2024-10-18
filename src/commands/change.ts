@@ -83,20 +83,26 @@ export async function change(args?: {
     remoteName,
     targetBranch: headBranchName
   })
-  const localChangeFiles = await getLocalChangeFiles({
+  const localChangeFileFullPaths = await getLocalChangeFiles({
     currentBranchName,
     projectRootDir: projectRootDirectory
   })
+  const allChangeFilePaths = [
+    ...new Set([
+      ...localChangeFileFullPaths,
+      ...remoteChangeFiles.changedFilePaths
+    ])
+  ]
 
-  if (remoteChangeFiles.changedFilePaths.length < 1) {
+  if (allChangeFilePaths.length < 1) {
     console.log(
       `No changes were detected when comparing branch ${currentBranchName} against ${remoteName}/${headBranchName}.`
     )
     return
   }
   // intentionally not checking untracked files, so the user can (if they want) generate "duplicates"
-  const currentChangeFilePaths = remoteChangeFiles.changedFilePaths.filter(
-    changedFilePath => changedFilePath.startsWith(changeFileDirectoryRoot)
+  const currentChangeFilePaths = allChangeFilePaths.filter(changedFilePath =>
+    changedFilePath.startsWith(changeFileDirectoryRoot)
   )
   if (args?.verify === true) {
     if (currentChangeFilePaths.length < 1) {
@@ -357,23 +363,25 @@ async function getCompactChangeSummary(args: {
   }
 }
 
+/** Gets all of the file paths for each local change file for this branch. */
 async function getLocalChangeFiles(args: {
   /** The name of the current branch that is checked out. */
   currentBranchName: string
   projectRootDir: string
-}): Promise<{
-  /** Paths of the changed files relative to the root directory of the repository. */
-  changedFilePaths: string[]
-}> {
+}): Promise<string[]> {
   const changeFileFullRootDir = path.join(
     args.projectRootDir,
     changeFileDirectoryRoot
   )
-  const allChangeFileNames = await getFilesListInDirectory({
+  const allFileNames = await getFilesListInDirectory({
     path: changeFileFullRootDir
   })
-  console.log(allChangeFileNames)
-  throw new Error("foo")
+  const branchNameFormatted = getFormattedChangeFileBranchName(
+    args.currentBranchName
+  )
+  return allFileNames
+    .filter(fileName => fileName.includes(branchNameFormatted))
+    .map(fileName => path.join(changeFileFullRootDir, fileName))
 }
 
 /*
