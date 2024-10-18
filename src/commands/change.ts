@@ -78,7 +78,7 @@ export async function change(args?: {
   const projectName = await getCurrentProjectName(projectRootDirectory)
   // TODO: what does the response look like when there are no changes?
   // TODO: need to also check against the current branches remote branch to see what change files have already been pushed... probably need to check against local commits as well
-  const remoteChangeFiles = await getCompactChangeSummary({
+  const gitChanges = await getCompactChangeSummary({
     currentBranchName,
     remoteName,
     targetBranch: headBranchName
@@ -87,25 +87,21 @@ export async function change(args?: {
     currentBranchName,
     projectRootDir: projectRootDirectory
   })
-  const allChangeFilePaths = [
-    ...new Set([
-      ...localChangeFileFullPaths,
-      ...remoteChangeFiles.changedFilePaths
-    ])
-  ]
-
-  if (allChangeFilePaths.length < 1) {
+  if (gitChanges.changedFilePaths.length < 1) {
     console.log(
       `No changes were detected when comparing branch ${currentBranchName} against ${remoteName}/${headBranchName}.`
     )
     return
   }
   // intentionally not checking untracked files, so the user can (if they want) generate "duplicates"
-  const currentChangeFilePaths = allChangeFilePaths.filter(changedFilePath =>
-    changedFilePath.startsWith(changeFileDirectoryRoot)
+  const remoteChangeFilePaths = gitChanges.changedFilePaths.filter(
+    changedFilePath => changedFilePath.startsWith(changeFileDirectoryRoot)
   )
+  const allChangeFilePaths = [
+    ...new Set([...localChangeFileFullPaths, ...remoteChangeFilePaths])
+  ]
   if (args?.verify === true) {
-    if (currentChangeFilePaths.length < 1) {
+    if (allChangeFilePaths.length < 1) {
       exitProcessWithError({
         error:
           "Changes were detected but no change files! Please run `ccg change` to generate change files."
@@ -121,7 +117,7 @@ export async function change(args?: {
   console.log(`current branch: ${remoteName}/${currentBranchName}`)
   console.log(`target branch: ${remoteName}/${headBranchName}`)
   // prompt the user
-  if (currentChangeFilePaths.length < 1) {
+  if (allChangeFilePaths.length < 1) {
     const changeFileContent = await promptToCreateChangeFile(projectName)
     await saveChangeFile({
       projectRootDir: projectRootDirectory,
@@ -131,7 +127,7 @@ export async function change(args?: {
   } else {
     console.log(projectName, "Found existing change logs:")
     const loadedChangeFiles = await Promise.all(
-      currentChangeFilePaths.map(readChangeFile)
+      allChangeFilePaths.map(readChangeFile)
     )
     console.log(
       loadedChangeFiles.reduce((listOfFormattedChanges, loadedChangeFile) => {
