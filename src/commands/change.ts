@@ -369,7 +369,7 @@ async function getLocalChangeFiles(args: {
     args.projectRootDir,
     changeFileDirectoryRoot
   )
-  const allChangeFileNames = getFilesListInDirectory({
+  const allChangeFileNames = await getFilesListInDirectory({
     path: changeFileFullRootDir
   })
   console.log(allChangeFileNames)
