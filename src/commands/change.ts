@@ -5,6 +5,7 @@ import * as path from "path"
 import { exitProcessWithError } from "../utils/process.js"
 import {
   ChangeFile,
+  ChangeType,
   changeTypeEnum,
   getChangeTypeDescription,
   isChangeFile
@@ -138,31 +139,34 @@ async function promptToCreateChangeFile(
   const changeMessage = await textPrompt({
     message: "Describe changes or leave blank for no changes:"
   })
-  const patch = await selectionPrompt({
-    message: "Select change type:",
-    options: [
-      {
-        value: changeTypeEnum.MAJOR,
-        name: changeTypeEnum.MAJOR,
-        description: getChangeTypeDescription(changeTypeEnum.MAJOR)
-      },
-      {
-        value: changeTypeEnum.MINOR,
-        name: changeTypeEnum.MINOR,
-        description: getChangeTypeDescription(changeTypeEnum.MINOR)
-      },
-      {
-        value: changeTypeEnum.PATCH,
-        name: changeTypeEnum.PATCH,
-        description: getChangeTypeDescription(changeTypeEnum.PATCH)
-      },
-      {
-        value: changeTypeEnum.NONE,
-        name: changeTypeEnum.NONE,
-        description: getChangeTypeDescription(changeTypeEnum.NONE)
-      }
-    ]
-  })
+  let patch: ChangeType = changeTypeEnum.NONE
+  if (changeMessage.trim().length > 0) {
+    patch = await selectionPrompt({
+      message: "Select change type:",
+      options: [
+        {
+          value: changeTypeEnum.MAJOR,
+          name: changeTypeEnum.MAJOR,
+          description: getChangeTypeDescription(changeTypeEnum.MAJOR)
+        },
+        {
+          value: changeTypeEnum.MINOR,
+          name: changeTypeEnum.MINOR,
+          description: getChangeTypeDescription(changeTypeEnum.MINOR)
+        },
+        {
+          value: changeTypeEnum.PATCH,
+          name: changeTypeEnum.PATCH,
+          description: getChangeTypeDescription(changeTypeEnum.PATCH)
+        },
+        {
+          value: changeTypeEnum.NONE,
+          name: changeTypeEnum.NONE,
+          description: getChangeTypeDescription(changeTypeEnum.NONE)
+        }
+      ]
+    })
+  }
   return {
     changes: [
       {
