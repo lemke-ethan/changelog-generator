@@ -11,7 +11,11 @@ import {
   isChangeFile
 } from "../types/changeFile.js"
 import { selectionPrompt, textPrompt } from "../utils/prompt.js"
-import { readJson, writeJson } from "../services/fileSystem.js"
+import {
+  readJson,
+  writeJson,
+  getFilesListInDirectory
+} from "../services/fileSystem.js"
 
 const changeFileDirectoryRoot = "changes" + path.sep
 
@@ -74,20 +78,24 @@ export async function change(args?: {
   const projectName = await getCurrentProjectName(projectRootDirectory)
   // TODO: what does the response look like when there are no changes?
   // TODO: need to also check against the current branches remote branch to see what change files have already been pushed... probably need to check against local commits as well
-  const changeSummary = await getCompactChangeSummary({
+  const remoteChangeFiles = await getCompactChangeSummary({
     currentBranchName,
     remoteName,
     targetBranch: headBranchName
   })
+  const localChangeFiles = await getLocalChangeFiles({
+    currentBranchName,
+    projectRootDir: projectRootDirectory
+  })
 
-  if (changeSummary.changedFilePaths.length < 1) {
+  if (remoteChangeFiles.changedFilePaths.length < 1) {
     console.log(
       `No changes were detected when comparing branch ${currentBranchName} against ${remoteName}/${headBranchName}.`
     )
     return
   }
   // intentionally not checking untracked files, so the user can (if they want) generate "duplicates"
-  const currentChangeFilePaths = changeSummary.changedFilePaths.filter(
+  const currentChangeFilePaths = remoteChangeFiles.changedFilePaths.filter(
     changedFilePath => changedFilePath.startsWith(changeFileDirectoryRoot)
   )
   if (args?.verify === true) {
@@ -347,6 +355,25 @@ async function getCompactChangeSummary(args: {
     changedFilePaths,
     shortStat
   }
+}
+
+async function getLocalChangeFiles(args: {
+  /** The name of the current branch that is checked out. */
+  currentBranchName: string
+  projectRootDir: string
+}): Promise<{
+  /** Paths of the changed files relative to the root directory of the repository. */
+  changedFilePaths: string[]
+}> {
+  const changeFileFullRootDir = path.join(
+    args.projectRootDir,
+    changeFileDirectoryRoot
+  )
+  const allChangeFileNames = getFilesListInDirectory({
+    path: changeFileFullRootDir
+  })
+  console.log(allChangeFileNames)
+  throw new Error("foo")
 }
 
 /*
