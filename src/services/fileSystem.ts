@@ -1,6 +1,7 @@
 // Copyright 2024 MFB Technologies, Inc.
 
 import * as nodeFs from "fs"
+import * as nodeAsyncFs from "node:fs/promises"
 import path from "path"
 
 export async function readJson(path: string): Promise<unknown> {
@@ -47,4 +48,15 @@ async function ensureFullPathExists(path: string): Promise<void> {
       }
     })
   })
+}
+
+/** Gets a list of full file paths of files in the specified directory. */
+export async function getFilesListInDirectory(args: {
+  path: string
+}): Promise<string[]> {
+  console.log(args)
+  if (!nodeFs.existsSync(args.path)) {
+    return []
+  }
+  return nodeAsyncFs.readdir(args.path)
 }
