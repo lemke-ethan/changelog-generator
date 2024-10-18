@@ -54,7 +54,6 @@ async function ensureFullPathExists(path: string): Promise<void> {
 export async function getFilesListInDirectory(args: {
   path: string
 }): Promise<string[]> {
-  console.log(args)
   if (!nodeFs.existsSync(args.path)) {
     return []
   }
