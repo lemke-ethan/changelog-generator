@@ -1,6 +1,6 @@
 // Copyright 2024 MFB Technologies, Inc.
 
-import { input, select } from "@inquirer/prompts"
+import { input, select, confirm } from "@inquirer/prompts"
 
 /** Prompt the user for some text input. */
 export async function textPrompt(args: { message: string }): Promise<string> {
@@ -25,5 +25,14 @@ export async function selectionPrompt<T>(args: {
   return select<T>({
     message: args.message,
     choices: args.options
+  })
+}
+
+/** Prompt the user for a yes/no response. */
+export async function booleanPrompt(args: {
+  message: string
+}): Promise<boolean> {
+  return confirm({
+    message: args.message
   })
 }
