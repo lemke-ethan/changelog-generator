@@ -57,8 +57,11 @@ export async function getCompactChangeSummary(args: {
   /** The name of the branch you want to compare against. */
   targetBranch: string
 }): Promise<{
-  /** Paths of the changed files relative to the root directory of the repository. */
-  changedFilePaths: string[]
+  /**
+   * A collection of file paths of files that have changed with respect to the target branch. The
+   * paths are relative to the root directory of the repository.
+   */
+  pathsOfMutatedFiles: string[]
   /**
    * A short summary of changes.
    *
@@ -87,7 +90,7 @@ export async function getCompactChangeSummary(args: {
       return rawSummaryRow.slice(0, firstSpaceIndex)
     })
   return {
-    changedFilePaths,
+    pathsOfMutatedFiles: changedFilePaths,
     shortStat
   }
 }

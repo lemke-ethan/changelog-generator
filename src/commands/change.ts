@@ -17,10 +17,10 @@ import {
 import { getCurrentProjectName } from "../services/npm.js"
 import {
   getLocalChangeFiles,
+  isLocalChangeFile,
   readChangeFile,
   saveChangeFile
 } from "../services/changeFile.js"
-import { changeFileDirectoryRoot } from "../constants.js"
 
 /**
  * Checks for changes from "HEAD" to remote "main" branch. If changes exist and a change file
@@ -60,18 +60,18 @@ export async function change(args?: {
     currentBranchName,
     projectRootDir: projectRootDirectory
   })
-  if (gitChanges.changedFilePaths.length < 1) {
+  if (gitChanges.pathsOfMutatedFiles.length < 1) {
     console.log(
       `No changes were detected when comparing branch ${currentBranchName} against ${remoteName}/${headBranchName}.`
     )
     return
   }
-  // intentionally not checking untracked files, so the user can (if they want) generate "duplicates"
-  const remoteChangeFilePaths = gitChanges.changedFilePaths.filter(
-    changedFilePath => changedFilePath.startsWith(changeFileDirectoryRoot)
-  )
+  // intentionally not checking untracked files for change files, so the user can (if they want)
+  // generate duplicate change files.
+  const allTrackedChangeFilePaths =
+    gitChanges.pathsOfMutatedFiles.filter(isLocalChangeFile)
   const allChangeFilePaths = [
-    ...new Set([...localChangeFileFullPaths, ...remoteChangeFilePaths])
+    ...new Set([...localChangeFileFullPaths, ...allTrackedChangeFilePaths])
   ]
   if (args?.verify === true) {
     if (allChangeFilePaths.length < 1) {
