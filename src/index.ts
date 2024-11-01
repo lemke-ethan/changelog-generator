@@ -7,15 +7,26 @@ import {
   ChangeCommandDescription,
   ChangeCommandName,
   ChangeCommandOptionDescription,
-  ChangeCommandOptionFlag
+  ChangeCommandOptionFlag,
+  PublishCommandDescription,
+  PublishCommandName,
+  PublishCommandOptionDescription,
+  PublishCommandOptionFlag
 } from "./constants.js"
+import { publish } from "./commands/publish.js"
 
-const program = new Command("ccg")
+const ccgProgram = new Command("ccg")
 
-program
+ccgProgram
   .command(ChangeCommandName)
   .description(ChangeCommandDescription)
   .option(ChangeCommandOptionFlag.verify, ChangeCommandOptionDescription.verify)
   .action(change)
 
-program.parse(process.argv)
+ccgProgram
+  .command(PublishCommandName)
+  .description(PublishCommandDescription)
+  .option(PublishCommandOptionFlag.apply, PublishCommandOptionDescription.apply)
+  .action(publish)
+
+ccgProgram.parse(process.argv)
