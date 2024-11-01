@@ -7,6 +7,8 @@ export const changeTypeEnum = {
   PATCH: "PATCH",
   /** Not rendered in the change log md */
   NONE: "NONE",
+  // this appears the changelog json but not the md
+  // not sure how we could use this since ccg isn't used to manage the package.json dependencies
   /** Not rendered in the change log md */
   DEPENDENCY: "DEPENDENCY"
 } as const
