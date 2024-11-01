@@ -1,6 +1,9 @@
 // Copyright 2024 MFB Technologies, Inc.
 
 import { getAllLocalChangeFiles } from "../services/changeFile.js"
+import { readJson } from "../services/fileSystem.js"
+import { getCurrentProjectVersion } from "../services/npm.js"
+import { ChangeLog } from "../types/changeLog.js"
 
 // TODO: incorporate npm publish command
 
@@ -23,8 +26,6 @@ export async function publish(args?: {
 }): Promise<void> {
   /*
     TODO:
-      1. get the current package version number from the package.json, if one is not found use 
-      version number 0.0.0
       1. get the current CHANGELOG.json, if one is not found then init it
       1. init the new version number to the current package's version number
       1. for each change file
@@ -49,5 +50,17 @@ export async function publish(args?: {
     console.log("No change files were found. Nothing to do.")
     return
   }
-  console.log(allLocalChangeFiles)
+  const currentVersion = await getCurrentProjectVersion(projectRootDirectory)
+  const currentChangelogJson = await getChangelogJsonFile({
+    projectRootDirectory
+  })
+
+  console.log(currentChangelogJson)
+}
+
+async function getChangelogJsonFile(args: {
+  projectRootDirectory: string
+}): Promise<ChangeLog> {
+  const rawFile = await readJson(args?.projectRootDirectory)
+  throw new Error("TODO")
 }
