@@ -8,7 +8,7 @@ import {
   ChangeCommandName,
   ChangeCommandOptionDescription,
   ChangeCommandOptionFlag
-} from "./strings/constants.js"
+} from "./constants.js"
 
 const program = new Command("ccg")
 
