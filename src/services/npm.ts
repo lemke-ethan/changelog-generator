@@ -14,14 +14,28 @@ export async function getCurrentProjectName(
   return rawPackageJson.name
 }
 
+export async function getCurrentProjectVersion(
+  projectRootDir: string
+): Promise<string> {
+  const projectPackageJsonPath = path.resolve(projectRootDir, "package.json")
+  const rawPackageJson = await readJson(projectPackageJsonPath)
+  if (!isPackageJson(rawPackageJson)) {
+    throw new Error(`Invalid package.json at ${projectPackageJsonPath}.`)
+  }
+  return rawPackageJson.version
+}
+
 type PackageJson = {
   name: string
+  version: string
 }
 export function isPackageJson(obj: unknown): obj is PackageJson {
   return (
     typeof obj === "object" &&
     obj !== null &&
     "name" in obj &&
-    typeof obj.name === "string"
+    typeof obj.name === "string" &&
+    "version" in obj &&
+    typeof obj.version === "string"
   )
 }
