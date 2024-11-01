@@ -25,6 +25,22 @@ export async function getBranchesChangeFiles(args: {
     .map(fileName => path.join(changeFileFullRootDir, fileName))
 }
 
+/** Gets all of the file paths for each local change for all branches. */
+export async function getAllLocalChangeFiles(args: {
+  projectRootDir: string
+}): Promise<string[]> {
+  const changeFileFullRootDir = path.join(
+    args.projectRootDir,
+    changeFileDirectoryRoot
+  )
+  const allFileNames = await getFilesListInDirectory({
+    path: changeFileFullRootDir
+  })
+  return allFileNames.map(fileName =>
+    path.join(changeFileFullRootDir, fileName)
+  )
+}
+
 /*
  * The change files will be generated in a `changes/` directory with `[branch name]_[date/time]`,
  * where the branch name uses numbers, letters and "-"s as separators and an example of the
