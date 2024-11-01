@@ -16,7 +16,7 @@ import {
 } from "../services/git.js"
 import { getCurrentProjectName } from "../services/npm.js"
 import {
-  getLocalChangeFiles,
+  getBranchesChangeFiles,
   isLocalChangeFile,
   readChangeFile,
   saveChangeFile
@@ -56,8 +56,8 @@ export async function change(args?: {
     remoteName,
     targetBranch: headBranchName
   })
-  const localChangeFileFullPaths = await getLocalChangeFiles({
-    currentBranchName,
+  const localChangeFileFullPaths = await getBranchesChangeFiles({
+    targetBranchName: currentBranchName,
     projectRootDir: projectRootDirectory
   })
   if (gitChanges.pathsOfMutatedFiles.length < 1) {

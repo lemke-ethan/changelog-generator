@@ -5,10 +5,9 @@ import { ChangeFile, isChangeFile } from "../types/changeFile.js"
 import { getFilesListInDirectory, readJson, writeJson } from "./fileSystem.js"
 import { changeFileDirectoryRoot } from "../constants.js"
 
-/** Gets all of the file paths for each local change file for this branch. */
-export async function getLocalChangeFiles(args: {
-  /** The name of the current branch that is checked out. */
-  currentBranchName: string
+/** Gets all of the file paths for each local change file in a specific branch. */
+export async function getBranchesChangeFiles(args: {
+  targetBranchName: string
   projectRootDir: string
 }): Promise<string[]> {
   const changeFileFullRootDir = path.join(
@@ -19,7 +18,7 @@ export async function getLocalChangeFiles(args: {
     path: changeFileFullRootDir
   })
   const branchNameFormatted = getFormattedChangeFileBranchName(
-    args.currentBranchName
+    args.targetBranchName
   )
   return allFileNames
     .filter(fileName => fileName.includes(branchNameFormatted))
