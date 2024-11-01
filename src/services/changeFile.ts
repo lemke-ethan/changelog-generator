@@ -97,7 +97,7 @@ async function getChangeFiles(args: {
   // use this to check for change files associated with the current branch
   currentBranchName: string
 }): Promise<ChangeFile[]> {
-  // TODO: finish implementing
+  // TODO: is this needed?
   /*
     what if you are on branch A, you generate change files, merge A into your main branch, then push
     more changes to A and run the cli?
