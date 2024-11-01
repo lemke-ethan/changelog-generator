@@ -61,6 +61,10 @@ export async function readChangeFile(path: string): Promise<ChangeFile> {
   throw new Error(`Invalid change file found: ${path}.`)
 }
 
+export function isLocalChangeFile(changedFilePath: string) {
+  return changedFilePath.startsWith(changeFileDirectoryRoot)
+}
+
 function getFormattedChangeFileDateTimeStamp(): string {
   const nowUtc = new Date()
   return `${nowUtc.getFullYear()}-${nowUtc.getMonth()}-${nowUtc.getDate()}-${nowUtc.getHours()}-${nowUtc.getMinutes()}`
