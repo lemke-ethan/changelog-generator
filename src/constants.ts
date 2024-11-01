@@ -1,5 +1,6 @@
 // Copyright 2024 MFB Technologies, Inc.
 
+import path from "path"
 import { ChangeType, changeTypeEnum } from "./types/changeFile.js"
 
 export const newlineRegex = new RegExp(/\n/)
@@ -57,3 +58,5 @@ export const ChangeCommandOptionDescription: {
 } = {
   verify: "Verify the change file has been generated and is valid."
 }
+
+export const changeFileDirectoryRoot = "changes" + path.sep
