@@ -42,15 +42,12 @@ export async function change(args?: {
   verify?: boolean
 }): Promise<void> {
   const currentBranchName = await getCurrentGitBranchName()
-  // TODO: verify against the remote name in the config
   const remoteName = await getRemoteName(currentBranchName)
-  // TODO: use the branch name from the config instead
   const headBranchName = await getHeadBranchName(remoteName)
   // assume script is run from the root of the project
   const projectRootDirectory = process.cwd()
   const projectName = await getCurrentProjectName(projectRootDirectory)
   // TODO: what does the response look like when there are no changes?
-  // TODO: need to also check against the current branches remote branch to see what change files have already been pushed... probably need to check against local commits as well
   const gitChanges = await getCompactChangeSummary({
     currentBranchName,
     remoteName,
