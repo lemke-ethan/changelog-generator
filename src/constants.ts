@@ -60,3 +60,23 @@ export const ChangeCommandOptionDescription: {
 }
 
 export const changeFileDirectoryRoot = "changes" + path.sep
+
+/** Readable name of the publish command. */
+export const PublishCommandName = "publish"
+
+/** Readable description of the publish command. */
+export const PublishCommandDescription =
+  "Combines all of the existing changes files into the change log and consolidates the version bumps in the change files down to a single version"
+
+/** Readable flags of each option in the publish command. */
+export const PublishCommandOptionFlag = {
+  apply: "--apply"
+}
+
+/** Readable descriptions of each option in the publish command. */
+export const PublishCommandOptionDescription: {
+  [Property in keyof typeof PublishCommandOptionFlag]: string
+} = {
+  apply:
+    "By default this command will perform a readonly operation. If you want to update the change log files and the project's version (i.e. package.json), then specify this argument."
+}
