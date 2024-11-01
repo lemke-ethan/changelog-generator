@@ -41,33 +41,6 @@ export async function change(args?: {
   /** Verify the change file has been generated and is valid. */
   verify?: boolean
 }): Promise<void> {
-  /* 
-    TODO:
-      1. get the current branch name: `git branch --show-current`
-      1. get the remote name using the current branch name: `git config branch.<branch name>.remote`
-      1. get the "main" origin branch by parsing out "HEAD branch:" from `git remote show <remote name>`
-      1. check for a diff from HEAD against "main" origin branch `git diff HEAD..<remote name>/<main branch name> --shortstat`
-      1. if a diff does not exist then exit 
-      1. otherwise,
-      1. if `verify` is true, then throw an error
-      1. show the user what branch they are on
-      1. show the user what the target branch is (i.e. "main" branch name with remote name)
-      1. check for existing change files for the project 
-      1. if there are no existing change files then prompt the user
-      =>
-       1. otherwise, 
-        1. show the user the existing comments from the existing change files
-        1. prompt the user do nothing or append comments
-        1. if the user wants to append comments, then prompt the user to generate a new change file
-       1. load the config and use those values
-
-      prompting the user to generate a change file or append comments looks like this
-
-      1. prompt the user for a change description
-      1. prompt the user for a change type (use the types and descriptions from types module)
-      1. generate a new change file with file name <branch name>-<timestamp>.json in ./changes/
-  */
-
   const currentBranchName = await getCurrentGitBranchName()
   // TODO: verify against the remote name in the config
   const remoteName = await getRemoteName(currentBranchName)
