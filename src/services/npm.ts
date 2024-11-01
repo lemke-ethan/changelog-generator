@@ -3,6 +3,7 @@
 import path from "path"
 import { readJson } from "./fileSystem.js"
 
+/** @throws an error if the package.json is invalid. */
 export async function getCurrentProjectName(
   projectRootDir: string
 ): Promise<string> {
@@ -14,6 +15,7 @@ export async function getCurrentProjectName(
   return rawPackageJson.name
 }
 
+/** @throws an error if the package.json is invalid. */
 export async function getCurrentProjectVersion(
   projectRootDir: string
 ): Promise<string> {
