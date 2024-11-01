@@ -1,24 +1,28 @@
 // Copyright 2024 MFB Technologies, Inc.
 
+import { getAllLocalChangeFiles } from "../services/changeFile.js"
+
 // TODO: incorporate npm publish command
 
 /**
- * Combines all of the existing changes files into the change log and compresses the version bumps
+ * Combines all of the existing changes files into the change log and consolidates the version bumps
  * in the change files down to a single version, which is used to update the package.json version.
  *
  * If `CHANGELOG.md` and `CHANGELOG.json` files do not exist at the root of your project then they
  * will be created. These files need to be tracked in version control.
+ *
+ * By default this command will perform a readonly operation. If you want to update the change log
+ * files and the project's version (i.e. package.json), then specify `apply`.
  */
-export function publish(args?: {
-  /** Show this commands documentation and exits. */
-  help?: boolean
-  /** Attempts to update the projects package.json version, respectively. */
+export async function publish(args?: {
+  /**
+   * By default this command will perform a readonly operation. If you want to update the change log
+   * files and the project's version (i.e. package.json), then specify this argument.
+   */
   apply?: boolean
-}): void {
+}): Promise<void> {
   /*
     TODO:
-      1. check for changes files in the current project
-      1. if no change files exist, then exit
       1. get the current package version number from the package.json, if one is not found use 
       version number 0.0.0
       1. get the current CHANGELOG.json, if one is not found then init it
@@ -36,5 +40,14 @@ export function publish(args?: {
       1. overwrite/create the CHANGELOG.md with parsed json data
       1. if `args.apply` then attempt to update the package.json version number, log an error if we fail
   */
-  throw new Error("TODO")
+  // assume script is run from the root of the project
+  const projectRootDirectory = process.cwd()
+  const allLocalChangeFiles = await getAllLocalChangeFiles({
+    projectRootDir: projectRootDirectory
+  })
+  if (allLocalChangeFiles.length < 1) {
+    console.log("No change files were found. Nothing to do.")
+    return
+  }
+  console.log(allLocalChangeFiles)
 }
