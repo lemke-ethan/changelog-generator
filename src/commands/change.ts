@@ -1,6 +1,5 @@
 // Copyright 2024 MFB Technologies, Inc.
 
-import { spawn } from "child_process"
 import * as path from "path"
 import { exitProcessWithError } from "../utils/process.js"
 import {
@@ -16,6 +15,13 @@ import {
   writeJson,
   getFilesListInDirectory
 } from "../services/fileSystem.js"
+import {
+  getCompactChangeSummary,
+  getCurrentGitBranchName,
+  getRemoteName,
+  showRemoteOrigin
+} from "../services/git.js"
+import { getCurrentProjectName } from "../services/npm.js"
 
 const changeFileDirectoryRoot = "changes" + path.sep
 
@@ -177,25 +183,6 @@ async function promptToAppendChangeFileToExisting(
   }
 }
 
-// TODO: move these are related functions into a git service
-async function getCurrentGitBranchName(): Promise<string> {
-  return runCommand({ command: "git", args: ["branch", "--show-current"] })
-}
-
-async function getRemoteName(currentBranchName: string): Promise<string> {
-  return runCommand({
-    command: "git",
-    args: ["config", `branch.${currentBranchName}.remote`]
-  })
-}
-
-async function showRemoteOrigin(remoteName: string): Promise<string> {
-  return runCommand({
-    command: "git",
-    args: ["remote", "show", remoteName]
-  })
-}
-
 async function getHeadBranchName(remoteName: string): Promise<string> {
   const remoteOrigin = await showRemoteOrigin(remoteName)
   const headBranchKey = "HEAD branch: "
@@ -207,70 +194,6 @@ async function getHeadBranchName(remoteName: string): Promise<string> {
     throw new Error("unable to find the head branch name.")
   }
   return headBranchName.trim().replace(headBranchKey, "")
-}
-
-// TODO: move into service
-/** Runs a command and returns its output. */
-async function runCommand(args: {
-  command: string
-  args?: readonly string[]
-}): Promise<string> {
-  const command = spawn(args.command, args.args)
-  return new Promise((resolve, reject) => {
-    let result = ""
-    command.on("error", err => {
-      reject("command failed: failed to start the subprocess: " + err.message)
-    })
-    command.on("close", code => {
-      if (code !== 0) {
-        reject("command failed with exit code " + code)
-      } else {
-        resolve(result)
-      }
-    })
-    command.stdout.on("data", (data: unknown) => {
-      if (!hasToStringMethod(data)) {
-        reject("unknown response data: " + JSON.stringify(data))
-        command.kill(1)
-        return
-      }
-      result += data.toString().trim()
-    })
-    command.stderr.on("data", data => {
-      reject(`command failed: ${data}`)
-      command.kill(1)
-    })
-  })
-}
-
-// TODO: move to utils module
-function hasToStringMethod(obj: unknown): obj is { toString: () => string } {
-  return (
-    typeof obj === "object" &&
-    obj !== null &&
-    "toString" in obj &&
-    typeof obj.toString === "function"
-  )
-}
-
-/**
- * Checks for changes between the current branch to the remote head branch.
- *
- * @returns `true` if there are changes, otherwise `false`.
- */
-async function checkForChanges(args: {
-  remoteName: string
-  headBranchName: string
-}): Promise<boolean> {
-  /*
-    - `--shortstat` summarizes the changes. e.g., "27 files changed, 5743 insertions(+), 2 deletions(-)" 
-    - if there are no changes then "" is returned
-   */
-  const output = await runCommand({
-    command: "git",
-    args: ["diff", "--shortstat", `${args.remoteName}/${args.headBranchName}`]
-  })
-  return output.trim().length > 0
 }
 
 async function getChangeFiles(args: {
@@ -295,57 +218,6 @@ async function getChangeFiles(args: {
     one or more change files in that list then prompt with skip.
   */
   return []
-}
-
-const newlineRegex = new RegExp(/\n/)
-const singleSpaceChar = " "
-/**
- * Gets the collection of file paths that have been changed between the current checked out branch
- * and the remote branch.
- *
- * @returns `true` if there are changes, otherwise `false`.
- */
-async function getCompactChangeSummary(args: {
-  /** The name of the current branch that is checked out. */
-  currentBranchName: string
-  /** The name of the remote. */
-  remoteName: string
-  /** The name of the branch you want to compare against. */
-  targetBranch: string
-}): Promise<{
-  /** Paths of the changed files relative to the root directory of the repository. */
-  changedFilePaths: string[]
-  /**
-   * A short summary of changes.
-   *
-   * @example
-   * ```text
-   * 2 files changed, 2 insertions(+), 1 deletions(-)
-   * ```
-   */
-  shortStat: string | undefined
-}> {
-  const output = await runCommand({
-    command: "git",
-    args: [
-      "diff",
-      `${args.remoteName}/${args.targetBranch}...${args.currentBranchName}`,
-      "--compact-summary"
-    ]
-  })
-  const rawList = output.split(newlineRegex)
-  const shortStat = rawList[rawList.length - 1]
-  const changedFilePaths = rawList
-    .slice(0, rawList.length - 1)
-    .map(rawSummaryRow => rawSummaryRow.trim())
-    .map(rawSummaryRow => {
-      const firstSpaceIndex = rawSummaryRow.indexOf(singleSpaceChar)
-      return rawSummaryRow.slice(0, firstSpaceIndex)
-    })
-  return {
-    changedFilePaths,
-    shortStat
-  }
 }
 
 /** Gets all of the file paths for each local change file for this branch. */
@@ -405,28 +277,6 @@ function getFormattedChangeFileBranchName(branchName: string): string {
   const dashChar = "-"
   const notAlphaNumOrDashChar = new RegExp("[^a-zA-Z0-9-]")
   return branchName.split(notAlphaNumOrDashChar).join(dashChar)
-}
-
-// TODO: move into an npm service
-async function getCurrentProjectName(projectRootDir: string): Promise<string> {
-  const projectPackageJsonPath = path.resolve(projectRootDir, "package.json")
-  const rawPackageJson = await readJson(projectPackageJsonPath)
-  if (!isPackageJson(rawPackageJson)) {
-    throw new Error(`Invalid package.json at ${projectPackageJsonPath}.`)
-  }
-  return rawPackageJson.name
-}
-
-type PackageJson = {
-  name: string
-}
-function isPackageJson(obj: unknown): obj is PackageJson {
-  return (
-    typeof obj === "object" &&
-    obj !== null &&
-    "name" in obj &&
-    typeof obj.name === "string"
-  )
 }
 
 async function readChangeFile(path: string): Promise<ChangeFile> {
