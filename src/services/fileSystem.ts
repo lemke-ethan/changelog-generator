@@ -3,12 +3,33 @@
 import * as nodeFs from "fs"
 import * as nodeAsyncFs from "node:fs/promises"
 import path from "path"
+import {
+  ChangeLogError,
+  changeLogErrorCodes,
+  createChangeLogError
+} from "../utils/changeLogError.js"
 
-export async function readJson(path: string): Promise<unknown> {
-  return new Promise((resolve, reject) => {
+export async function readJson(
+  path: string
+): Promise<Record<string, unknown> | ChangeLogError> {
+  return new Promise(resolve => {
     nodeFs.readFile(path, { encoding: "utf8" }, (error, data) => {
       if (error !== null) {
-        reject(error)
+        if (error.message.includes("no such file or directory")) {
+          resolve(
+            createChangeLogError({
+              code: changeLogErrorCodes.NO_SUCH_FILE_OR_DIRECTORY,
+              message: error.message
+            })
+          )
+        } else {
+          resolve(
+            createChangeLogError({
+              code: changeLogErrorCodes.UNKNOWN_FILE_SYSTEM_ERROR,
+              message: error.message
+            })
+          )
+        }
         return
       }
       const result = JSON.parse(data)
