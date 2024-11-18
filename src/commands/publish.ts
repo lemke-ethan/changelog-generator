@@ -1,9 +1,8 @@
 // Copyright 2024 MFB Technologies, Inc.
 
 import { getAllLocalChangeFiles } from "../services/changeFile.js"
-import { readJson } from "../services/fileSystem.js"
+import { getChangelogJsonFile } from "../services/changeLogFile.js"
 import { getCurrentProjectVersion } from "../services/npm.js"
-import { ChangeLog } from "../types/changeLog.js"
 
 // TODO: incorporate npm publish command
 
@@ -56,11 +55,4 @@ export async function publish(args?: {
   })
 
   console.log(currentChangelogJson)
-}
-
-async function getChangelogJsonFile(args: {
-  projectRootDirectory: string
-}): Promise<ChangeLog> {
-  const rawFile = await readJson(args?.projectRootDirectory)
-  throw new Error("TODO")
 }
