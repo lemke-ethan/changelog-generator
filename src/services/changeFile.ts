@@ -82,7 +82,7 @@ export function isLocalChangeFile(changedFilePath: string) {
 
 function getFormattedChangeFileDateTimeStamp(): string {
   const nowUtc = new Date()
-  return `${nowUtc.getFullYear()}-${nowUtc.getMonth()}-${nowUtc.getDate()}-${nowUtc.getHours()}-${nowUtc.getMinutes()}`
+  return `${nowUtc.getFullYear()}-${nowUtc.getMonth()}-${nowUtc.getDate()}-${nowUtc.getHours()}-${nowUtc.getMinutes()}-${nowUtc.getSeconds()}`
 }
 
 function getFormattedChangeFileBranchName(branchName: string): string {
