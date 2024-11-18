@@ -2,7 +2,8 @@
 
 export const changeLogErrorCodes = {
   NO_SUCH_FILE_OR_DIRECTORY: "CLEC0001",
-  UNKNOWN_FILE_SYSTEM_ERROR: "CLEC0002"
+  UNKNOWN_FILE_SYSTEM_ERROR: "CLEC0002",
+  INVALID_CHANGELOG_JSON: "CLEC0003"
 } as const
 
 export type ChangeLogErrorCodeEnum =
