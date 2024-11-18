@@ -173,7 +173,7 @@ async function promptToAppendChangeFileToExisting(
   projectName: string
 ): Promise<ChangeFile | undefined> {
   const appendComments = await booleanPrompt({
-    message: "Would you like to append comments or skip?"
+    message: "Append to existing comments?"
   })
   if (appendComments === true) {
     return promptToCreateChangeFile(projectName)
