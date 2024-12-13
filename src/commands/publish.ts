@@ -8,8 +8,13 @@ import {
   createChangelogJsonFile,
   getChangelogJsonFile
 } from "../services/changeLogFile.js"
-import { getCurrentProjectName } from "../services/npm.js"
+import {
+  getCurrentProjectName,
+  getCurrentProjectVersion
+} from "../services/npm.js"
+import { getSemverString, parseSemver } from "../services/semver.js"
 import { changeTypeEnum } from "../types/changeFile.js"
+import { ChangeLogEntry, ChangeLogEntryComments } from "../types/changeLog.js"
 import { isChangeLogError } from "../utils/changeLogError.js"
 
 // TODO: incorporate npm publish command
@@ -58,19 +63,20 @@ export async function publish(args?: {
     console.log("No change files were found. Nothing to do.")
     return
   }
-  const currentChangelogJson = await getChangelogJsonFile({
+  let currentChangelogJson = await getChangelogJsonFile({
     projectRootDirectory
   })
   if (isChangeLogError(currentChangelogJson)) {
     const projectName = await getCurrentProjectName(projectRootDirectory)
-    const newChangeLogJsonFile = await createChangelogJsonFile({
+    currentChangelogJson = await createChangelogJsonFile({
       projectName,
       projectRootDirectory
     })
-    if (isChangeLogError(newChangeLogJsonFile)) {
-      throw newChangeLogJsonFile
+    if (isChangeLogError(currentChangelogJson)) {
+      throw currentChangelogJson
     }
   }
+  const allComments: ChangeLogEntryComments = {}
   let bumpMajor = false
   let bumpMinor = false
   let bumpPatch = false
@@ -81,6 +87,11 @@ export async function publish(args?: {
     for (let index = 0; index < changeFile.changes.length; index++) {
       const change = changeFile.changes[index]
       if (change === undefined) continue
+      if (change.type in allComments) {
+        allComments[change.type]?.push({ comment: change.comment })
+      } else {
+        allComments[change.type] = [{ comment: change.comment }]
+      }
       switch (change.type) {
         case changeTypeEnum.DEPENDENCY:
         case changeTypeEnum.NONE:
@@ -106,6 +117,28 @@ export async function publish(args?: {
       }
     }
   }
+
+  const currentVersionStr = await getCurrentProjectVersion(projectRootDirectory)
+  const newVersion = parseSemver(currentVersionStr)
+  if (newVersion === null) {
+    throw new Error("Invalid package version: " + currentVersionStr)
+  }
+  if (bumpMajor) {
+    newVersion.major += 1
+  } else if (bumpMinor) {
+    newVersion.minor += 1
+  } else if (bumpPatch) {
+    newVersion.patch += 1
+  }
+
+  const newChangeLogEntry: ChangeLogEntry = {
+    version: getSemverString(newVersion),
+    date: new Date().toUTCString(),
+    comments: allComments
+  }
+  currentChangelogJson.entries.push(newChangeLogEntry)
+
+  //TODO: overwrite the change log json
 
   console.log(currentChangelogJson, { bumpMajor, bumpMinor, bumpPatch })
 }
