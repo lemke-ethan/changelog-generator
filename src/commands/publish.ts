@@ -74,7 +74,9 @@ export async function publish(args?: {
   let bumpMajor = false
   let bumpMinor = false
   let bumpPatch = false
-  for (const localChangeFilePath in allLocalChangeFilePaths) {
+  for (let index = 0; index < allLocalChangeFilePaths.length; index++) {
+    const localChangeFilePath = allLocalChangeFilePaths[index]
+    if (localChangeFilePath === undefined) continue
     const changeFile = await readChangeFile(localChangeFilePath)
     for (let index = 0; index < changeFile.changes.length; index++) {
       const change = changeFile.changes[index]
