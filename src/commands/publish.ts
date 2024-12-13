@@ -1,10 +1,19 @@
 // Copyright 2024 MFB Technologies, Inc.
 
-import { getAllLocalChangeFiles } from "../services/changeFile.js"
-import { getChangelogJsonFile } from "../services/changeLogFile.js"
-import { getCurrentProjectVersion } from "../services/npm.js"
+import {
+  getAllLocalChangeFilePaths,
+  readChangeFile
+} from "../services/changeFile.js"
+import {
+  createChangelogJsonFile,
+  getChangelogJsonFile
+} from "../services/changeLogFile.js"
+import { getCurrentProjectName } from "../services/npm.js"
+import { changeTypeEnum } from "../types/changeFile.js"
+import { isChangeLogError } from "../utils/changeLogError.js"
 
 // TODO: incorporate npm publish command
+// TODO: assume that package versions use numeric versions only
 
 /**
  * Combines all of the existing changes files into the change log and consolidates the version bumps
@@ -42,17 +51,59 @@ export async function publish(args?: {
   */
   // assume script is run from the root of the project
   const projectRootDirectory = process.cwd()
-  const allLocalChangeFiles = await getAllLocalChangeFiles({
+  const allLocalChangeFilePaths = await getAllLocalChangeFilePaths({
     projectRootDir: projectRootDirectory
   })
-  if (allLocalChangeFiles.length < 1) {
+  if (allLocalChangeFilePaths.length < 1) {
     console.log("No change files were found. Nothing to do.")
     return
   }
-  const currentVersion = await getCurrentProjectVersion(projectRootDirectory)
   const currentChangelogJson = await getChangelogJsonFile({
     projectRootDirectory
   })
+  if (isChangeLogError(currentChangelogJson)) {
+    const projectName = await getCurrentProjectName(projectRootDirectory)
+    const newChangeLogJsonFile = await createChangelogJsonFile({
+      projectName,
+      projectRootDirectory
+    })
+    if (isChangeLogError(newChangeLogJsonFile)) {
+      throw newChangeLogJsonFile
+    }
+  }
+  let bumpMajor = false
+  let bumpMinor = false
+  let bumpPatch = false
+  for (const localChangeFilePath in allLocalChangeFilePaths) {
+    const changeFile = await readChangeFile(localChangeFilePath)
+    for (let index = 0; index < changeFile.changes.length; index++) {
+      const change = changeFile.changes[index]
+      if (change === undefined) continue
+      switch (change.type) {
+        case changeTypeEnum.DEPENDENCY:
+        case changeTypeEnum.NONE:
+          continue
+        case changeTypeEnum.PATCH:
+          if (!bumpMajor && !bumpMinor) {
+            bumpPatch = true
+          }
+          break
+        case changeTypeEnum.MINOR:
+          if (!bumpMajor) {
+            bumpMinor = true
+            bumpPatch = false
+          }
+          break
+        case changeTypeEnum.MAJOR:
+          if (!bumpMajor) {
+            bumpMajor = true
+            bumpMinor = false
+            bumpPatch = false
+          }
+          break
+      }
+    }
+  }
 
-  console.log(currentChangelogJson)
+  console.log(currentChangelogJson, { bumpMajor, bumpMinor, bumpPatch })
 }

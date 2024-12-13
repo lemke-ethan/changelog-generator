@@ -26,7 +26,7 @@ export async function getBranchesChangeFiles(args: {
 }
 
 /** Gets all of the file paths for each local change for all branches. */
-export async function getAllLocalChangeFiles(args: {
+export async function getAllLocalChangeFilePaths(args: {
   projectRootDir: string
 }): Promise<string[]> {
   const changeFileFullRootDir = path.join(
