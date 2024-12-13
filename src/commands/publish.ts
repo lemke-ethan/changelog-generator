@@ -125,8 +125,11 @@ export async function publish(args?: {
   }
   if (bumpMajor) {
     newVersion.major += 1
+    newVersion.minor = 0
+    newVersion.patch = 0
   } else if (bumpMinor) {
     newVersion.minor += 1
+    newVersion.patch = 0
   } else if (bumpPatch) {
     newVersion.patch += 1
   }
