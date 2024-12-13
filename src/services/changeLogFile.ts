@@ -35,20 +35,20 @@ export async function createChangelogJsonFile(args: {
   projectRootDirectory: string
 }): Promise<ChangeLog | ChangeLogError> {
   const data = getInitChangeLogJsonFile({ projectName: args.projectName })
-  const result = await writeJson({
-    path: args.projectRootDirectory,
-    fileName: changeLogJsonFileName,
-    data
-  })
-  if (!isChangeLog(result)) {
-    return Promise.resolve(
-      createChangeLogError({
-        code: changeLogErrorCodes.INVALID_CHANGELOG_JSON,
-        message: "Invalid change log JSON file."
-      })
-    )
+  try {
+    await writeJson({
+      path: args.projectRootDirectory,
+      fileName: changeLogJsonFileName,
+      data
+    })
+  } catch (e) {
+    return createChangeLogError({
+      code: changeLogErrorCodes.UNKNOWN_FILE_SYSTEM_ERROR,
+      message: "Failed to create change log JSON file.",
+      cause: e
+    })
   }
-  return result
+  return data
 }
 
 function getInitChangeLogJsonFile(args: { projectName: string }): ChangeLog {
