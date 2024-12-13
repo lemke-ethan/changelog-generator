@@ -19,3 +19,7 @@ export function parseSemver(version: string): Semver | null {
     patch: parsedSemver.patch
   }
 }
+
+export function getSemverString(version: Semver): string {
+  return `${version.major}.${version.minor}.${version.patch}`
+}
