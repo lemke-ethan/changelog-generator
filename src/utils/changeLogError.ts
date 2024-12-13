@@ -13,6 +13,7 @@ export type ChangeLogError = {
   __brandChangeLogError: Record<string, unknown>
   code: ChangeLogErrorCodeEnum
   message: string
+  cause?: unknown
 }
 
 export function isChangeLogErrorCodesEnum(
@@ -38,9 +39,11 @@ export function isChangeLogError(x: unknown): x is ChangeLogError {
 export function createChangeLogError(args: {
   code: ChangeLogErrorCodeEnum
   message: string
+  cause?: unknown
 }): ChangeLogError {
   return {
     code: args.code,
-    message: args.message
+    message: args.message,
+    cause: args.cause
   } as ChangeLogError
 }
