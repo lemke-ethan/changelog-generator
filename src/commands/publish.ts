@@ -6,7 +6,8 @@ import {
 } from "../services/changeFile.js"
 import {
   createChangelogJsonFile,
-  getChangelogJsonFile
+  getChangelogJsonFile,
+  saveChangelogJsonFile
 } from "../services/changeLogFile.js"
 import {
   getCurrentProjectName,
@@ -141,7 +142,23 @@ export async function publish(args?: {
   }
   currentChangelogJson.entries.push(newChangeLogEntry)
 
-  //TODO: overwrite the change log json
+  await saveChangelogJsonFile({
+    projectRootDirectory,
+    changeLog: currentChangelogJson
+  })
+
+  const foo = [
+    { h1: "Change Log - " + currentChangelogJson.name },
+    {
+      p: `This log was last generated on ${newChangeLogEntry.date} and should not be manually modified.`
+    }
+  ]
+  currentChangelogJson.entries.flatMap(entry => {
+    const goo = Object.entries(entry.comments).map(commentEntry => {
+      const [changeType, comments] = commentEntry
+    })
+    return [{ h2: entry.version }, { p: entry.date }, { h3: entry.comments }]
+  })
 
   console.log(currentChangelogJson, { bumpMajor, bumpMinor, bumpPatch })
 }
