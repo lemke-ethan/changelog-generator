@@ -57,3 +57,22 @@ function getInitChangeLogJsonFile(args: { projectName: string }): ChangeLog {
     entries: []
   }
 }
+
+export async function saveChangelogJsonFile(args: {
+  projectRootDirectory: string
+  changeLog: ChangeLog
+}): Promise<void | ChangeLogError> {
+  try {
+    await writeJson({
+      path: args.projectRootDirectory,
+      fileName: changeLogJsonFileName,
+      data: args.changeLog
+    })
+  } catch (e) {
+    return createChangeLogError({
+      code: changeLogErrorCodes.UNKNOWN_FILE_SYSTEM_ERROR,
+      message: "Failed to save the changes to the change log.",
+      cause: e
+    })
+  }
+}
