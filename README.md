@@ -15,17 +15,40 @@ The general workflow of a developer would be something like,
 
 Change files contain date/time, a short description of the change and an associated version bump for the change (i.e. major, minor, patch, or none).
 
-<!-- TODO: update before pr -->
-
 ```text
 Usage: ccg [options] [command]
 
 Options:
-  -h, --help        display help for command
+  -h, --help         display help for command
 
 Commands:
-  change [options]  Generates a change file if a change is detected.
-  help [command]    display help for command
+  change [options]   Generates a change file if a change is detected.
+  publish [options]  Combines all of the existing changes files into the change log and consolidates the version bumps in the change files down to a single version
+  help [command]     display help for command
+```
+
+### change
+
+```text
+Usage: ccg change [options]
+
+Generates a change file if a change is detected.
+
+Options:
+  -v, --verify    Verify the change file has been generated and is valid.
+  -h, --help      display help for command
+```
+
+### publish
+
+```text
+Usage: ccg publish [options]
+
+Combines all of the existing changes files into the change log and consolidates the version bumps in the change files down to a single version
+
+Options:
+  -a, --apply  By default this command will perform a readonly operation. If you want to update the change log files and the project's version (i.e. package.json), then specify this argument.
+  -h, --help   display help for command
 ```
 
 ### Configuration
@@ -47,7 +70,7 @@ Commands:
 ## Scripts
 
 - `build`: Builds the CLI.
-- `ccg`: Run the built CLI.
+- `ccg`: Run the built CLI. Use `--` before any arguments that you want to pass to the script.
 - `lint`: Fixes all lint errors.
 - `check-linting`: Checks for lint errors without fixing them.
 - `format`: Fixes all format errors.
