@@ -153,41 +153,46 @@ export async function publish(args?: {
   })
 
   const initChangelog = [
-    { h1: "Changelog - " + currentChangelogJson.name },
     {
+      h1: "Changelog - " + currentChangelogJson.name,
       p: `This log was last generated on ${newChangeLogEntry.date} and should not be manually modified.`
     }
   ]
-  const foo = currentChangelogJson.entries.flatMap(entry => {
-    const goo = Object.entries(entry.comments).reduce(
-      (ac, commentEntry) => {
-        const [changeType, comments] = commentEntry
-        const readableChangeType = capitalizeFirstCharacter(
-          changeType.toLocaleLowerCase()
-        )
-        return ac.concat([
-          {
-            h3: readableChangeType + "changes"
-          },
-          {
-            ul: comments.map(comment => comment.comment)
+  const changeLogEntries = currentChangelogJson.entries.flatMap(entry => {
+    const entryComments = Object.entries(entry.comments)
+      // sort to get major, minor and then patch changes
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .reduce(
+        (allEntryComments, commentEntry) => {
+          const [changeType, comments] = commentEntry
+          if (changeType === changeTypeEnum.NONE) {
+            return allEntryComments
           }
-        ])
-      },
-      [] as [{ h3: string }, { ul: string[] }][]
-    )
-    return [{ h2: entry.version }, { p: entry.date }, ...goo]
+          const readableChangeType = capitalizeFirstCharacter(
+            changeType.toLocaleLowerCase()
+          )
+          return allEntryComments.concat([
+            {
+              h3: readableChangeType + " changes",
+              ul: comments.map(comment => comment.comment)
+            }
+          ])
+        },
+        [] as { h3: string; ul: string[] }[]
+      )
+    return [{ h2: entry.version, p: entry.date }, ...entryComments]
   })
 
-  const jsonMdChangelog = [...initChangelog, ...foo]
+  const jsonMdChangelog = [...initChangelog, ...changeLogEntries]
   const mdChangelog = convertToMarkdown(jsonMdChangelog)
 
-  const doo = await saveChangelogMarkdownFile({
+  const markdownChangelogSaveResults = await saveChangelogMarkdownFile({
     projectRootDirectory,
     markdown: mdChangelog
   })
-  if (doo) {
-    console.error(doo)
+  console.log({ jsonMdChangelog, mdChangelog })
+  if (markdownChangelogSaveResults) {
+    console.error(markdownChangelogSaveResults)
   }
 }
 
