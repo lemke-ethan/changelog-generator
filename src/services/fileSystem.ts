@@ -80,3 +80,22 @@ export async function getFilesListInDirectory(args: {
   }
   return nodeAsyncFs.readdir(args.path)
 }
+
+/** Overwrites/creates the file with the data. */
+export async function writeString(args: {
+  path: string
+  fileName: string
+  data: string
+}): Promise<void> {
+  await ensureFullPathExists(args.path)
+  return new Promise((resolve, reject) => {
+    const fullPath = path.join(args.path, args.fileName)
+    nodeFs.writeFile(fullPath, args.data, { encoding: "utf-8" }, err => {
+      if (err !== null) {
+        reject(err)
+      } else {
+        resolve()
+      }
+    })
+  })
+}
