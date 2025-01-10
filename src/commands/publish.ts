@@ -196,7 +196,6 @@ export async function publish(args?: {
     projectRootDirectory,
     markdown: mdChangelog
   })
-  console.log({ jsonMdChangelog, mdChangelog })
   if (markdownChangelogSaveResults) {
     console.error(markdownChangelogSaveResults)
   }
