@@ -80,7 +80,7 @@ Options:
 
 ## Changelog
 
-TODO:link to changelog
+[Link to changelog](./CHANGELOG.md).
 
 ## Publishing
 
