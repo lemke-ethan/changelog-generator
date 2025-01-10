@@ -49,7 +49,7 @@ export const ChangeCommandDescription =
 
 /** Readable flags of each option in the change command. */
 export const ChangeCommandOptionFlag = {
-  verify: "--verify"
+  verify: "-v, --verify"
 }
 
 /** Readable descriptions of each option in the change command. */
@@ -70,7 +70,7 @@ export const PublishCommandDescription =
 
 /** Readable flags of each option in the publish command. */
 export const PublishCommandOptionFlag = {
-  apply: "--apply"
+  apply: "-a, --apply"
 }
 
 /** Readable descriptions of each option in the publish command. */
