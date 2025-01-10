@@ -2,7 +2,7 @@
 
 import path from "path"
 import { ChangeLog } from "../types/changeLog.js"
-import { readJson, writeJson } from "./fileSystem.js"
+import { readJson, writeJson, writeString } from "./fileSystem.js"
 import { isChangeLog } from "../types/changeLog.guards.js"
 import {
   ChangeLogError,
@@ -12,6 +12,7 @@ import {
 } from "../utils/changeLogError.js"
 
 const changeLogJsonFileName = "CHANGELOG.json"
+const changeLogMarkdownFileName = "CHANGELOG.md"
 
 export async function getChangelogJsonFile(args: {
   projectRootDirectory: string
@@ -71,7 +72,26 @@ export async function saveChangelogJsonFile(args: {
   } catch (e) {
     return createChangeLogError({
       code: changeLogErrorCodes.UNKNOWN_FILE_SYSTEM_ERROR,
-      message: "Failed to save the changes to the change log.",
+      message: "Failed to save the changes to the change log JSON file.",
+      cause: e
+    })
+  }
+}
+
+export async function saveChangelogMarkdownFile(args: {
+  projectRootDirectory: string
+  markdown: string
+}): Promise<void | ChangeLogError> {
+  try {
+    await writeString({
+      path: args.projectRootDirectory,
+      fileName: changeLogMarkdownFileName,
+      data: args.markdown
+    })
+  } catch (e) {
+    return createChangeLogError({
+      code: changeLogErrorCodes.UNKNOWN_FILE_SYSTEM_ERROR,
+      message: "Failed to save the changes to the change log Markdown file.",
       cause: e
     })
   }
