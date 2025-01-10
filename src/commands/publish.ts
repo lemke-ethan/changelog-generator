@@ -10,7 +10,7 @@ import {
   saveChangelogJsonFile,
   saveChangelogMarkdownFile
 } from "../services/changeLogFile.js"
-import { convertToMarkdown } from "../services/markdown.js"
+import { createJsonConverter } from "../services/markdown.js"
 import {
   getCurrentProjectName,
   getCurrentProjectVersion
@@ -184,7 +184,8 @@ export async function publish(args?: {
   })
 
   const jsonMdChangelog = [...initChangelog, ...changeLogEntries]
-  const mdChangelog = convertToMarkdown(jsonMdChangelog)
+  const jsonConverter = createJsonConverter()
+  const mdChangelog = jsonConverter.toMarkdown(jsonMdChangelog)
 
   const markdownChangelogSaveResults = await saveChangelogMarkdownFile({
     projectRootDirectory,
