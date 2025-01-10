@@ -2,33 +2,7 @@
 
 import jsonToMd from "json2md"
 
-export function convertToMarkdown(
-  value: (
-    | {
-        h1: string
-        p?: undefined
-      }
-    | {
-        p: string
-        h1?: undefined
-      }
-    | [
-        {
-          h3: string
-        },
-        {
-          ul: string[]
-        }
-      ]
-    | {
-        h2: string
-        p?: undefined
-      }
-    | {
-        p: string
-        h2?: undefined
-      }
-  )[]
-): string {
+// TODO: fix the typing
+export function convertToMarkdown(value: Record<string, unknown>[]): string {
   return jsonToMd(value)
 }
