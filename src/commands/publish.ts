@@ -9,6 +9,7 @@ import {
   getChangelogJsonFile,
   saveChangelogJsonFile
 } from "../services/changeLogFile.js"
+import { convertToMarkdown } from "../services/markdown.js"
 import {
   getCurrentProjectName,
   getCurrentProjectVersion
@@ -87,7 +88,10 @@ export async function publish(args?: {
     const changeFile = await readChangeFile(localChangeFilePath)
     for (let index = 0; index < changeFile.changes.length; index++) {
       const change = changeFile.changes[index]
-      if (change === undefined) continue
+      if (change === undefined) {
+        console.warn("unexpected undefined change entry at index " + index)
+        continue
+      }
       if (change.type in allComments) {
         allComments[change.type]?.push({ comment: change.comment })
       } else {
@@ -147,18 +151,41 @@ export async function publish(args?: {
     changeLog: currentChangelogJson
   })
 
-  const foo = [
-    { h1: "Change Log - " + currentChangelogJson.name },
+  const initChangelog = [
+    { h1: "Changelog - " + currentChangelogJson.name },
     {
       p: `This log was last generated on ${newChangeLogEntry.date} and should not be manually modified.`
     }
   ]
-  currentChangelogJson.entries.flatMap(entry => {
-    const goo = Object.entries(entry.comments).map(commentEntry => {
-      const [changeType, comments] = commentEntry
-    })
-    return [{ h2: entry.version }, { p: entry.date }, { h3: entry.comments }]
+  const foo = currentChangelogJson.entries.flatMap(entry => {
+    const goo = Object.entries(entry.comments).reduce(
+      (ac, commentEntry) => {
+        const [changeType, comments] = commentEntry
+        const readableChangeType = capitalizeFirstCharacter(
+          changeType.toLocaleLowerCase()
+        )
+        return ac.concat([
+          {
+            h3: readableChangeType + "changes"
+          },
+          {
+            ul: comments.map(comment => comment.comment)
+          }
+        ])
+      },
+      [] as [{ h3: string }, { ul: string[] }][]
+    )
+    return [{ h2: entry.version }, { p: entry.date }, ...goo]
   })
 
-  console.log(currentChangelogJson, { bumpMajor, bumpMinor, bumpPatch })
+  const jsonMdChangelog = [...initChangelog, ...foo]
+  const mdChangelog = convertToMarkdown(jsonMdChangelog)
+
+  console.log({
+    mdChangelog
+  })
+}
+
+function capitalizeFirstCharacter(value: string): string {
+  return value.charAt(0).toUpperCase() + value.slice(1)
 }
