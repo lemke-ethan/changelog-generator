@@ -1,13 +1,18 @@
 // Copyright 2024 MFB Technologies, Inc.
 
 import path from "path"
-import { readJson } from "./fileSystem.js"
+import { readJson, writeJson } from "./fileSystem.js"
+
+const npmPackageJsonFileName = "package.json"
 
 /** @throws an error if the package.json is invalid. */
 export async function getCurrentProjectName(
   projectRootDir: string
 ): Promise<string> {
-  const projectPackageJsonPath = path.resolve(projectRootDir, "package.json")
+  const projectPackageJsonPath = path.resolve(
+    projectRootDir,
+    npmPackageJsonFileName
+  )
   const rawPackageJson = await readJson(projectPackageJsonPath)
   if (!isPackageJson(rawPackageJson)) {
     throw new Error(`Invalid package.json at ${projectPackageJsonPath}.`)
@@ -19,7 +24,10 @@ export async function getCurrentProjectName(
 export async function getCurrentProjectVersion(
   projectRootDir: string
 ): Promise<string> {
-  const projectPackageJsonPath = path.resolve(projectRootDir, "package.json")
+  const projectPackageJsonPath = path.resolve(
+    projectRootDir,
+    npmPackageJsonFileName
+  )
   const rawPackageJson = await readJson(projectPackageJsonPath)
   if (!isPackageJson(rawPackageJson)) {
     throw new Error(`Invalid package.json at ${projectPackageJsonPath}.`)
@@ -40,4 +48,25 @@ export function isPackageJson(obj: unknown): obj is PackageJson {
     "version" in obj &&
     typeof obj.version === "string"
   )
+}
+
+/** @throws an error if the package.json is invalid. */
+export async function setCurrentProjectVersion(args: {
+  projectRootDir: string
+  newSemVer: string
+}): Promise<void> {
+  const projectPackageJsonPath = path.resolve(
+    args.projectRootDir,
+    npmPackageJsonFileName
+  )
+  const rawPackageJson = await readJson(projectPackageJsonPath)
+  if (!isPackageJson(rawPackageJson)) {
+    throw new Error(`Invalid package.json at ${projectPackageJsonPath}.`)
+  }
+  rawPackageJson.version = args.newSemVer
+  await writeJson({
+    path: args.projectRootDir,
+    fileName: npmPackageJsonFileName,
+    data: rawPackageJson
+  })
 }
