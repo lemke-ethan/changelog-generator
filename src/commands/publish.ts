@@ -161,7 +161,9 @@ export async function publish(args?: {
   const changeLogEntries = currentChangelogJson.entries.flatMap(entry => {
     const entryComments = Object.entries(entry.comments)
       // sort to get major, minor and then patch changes
-      .sort((a, b) => a[0].localeCompare(b[0]))
+      .sort(([changeTypeA], [changeTypeB]) =>
+        changeTypeA.localeCompare(changeTypeB)
+      )
       .reduce(
         (allEntryComments, commentEntry) => {
           const [changeType, comments] = commentEntry
@@ -180,6 +182,9 @@ export async function publish(args?: {
         },
         [] as { h3: string; ul: string[] }[]
       )
+    if (entryComments.length < 1) {
+      return [{ h2: entry.version, p: entry.date + "\nVersion update only." }]
+    }
     return [{ h2: entry.version, p: entry.date }, ...entryComments]
   })
 
