@@ -7,7 +7,8 @@ import {
 import {
   createChangelogJsonFile,
   getChangelogJsonFile,
-  saveChangelogJsonFile
+  saveChangelogJsonFile,
+  saveChangelogMarkdownFile
 } from "../services/changeLogFile.js"
 import { convertToMarkdown } from "../services/markdown.js"
 import {
@@ -181,9 +182,13 @@ export async function publish(args?: {
   const jsonMdChangelog = [...initChangelog, ...foo]
   const mdChangelog = convertToMarkdown(jsonMdChangelog)
 
-  console.log({
-    mdChangelog
+  const doo = await saveChangelogMarkdownFile({
+    projectRootDirectory,
+    markdown: mdChangelog
   })
+  if (doo) {
+    console.error(doo)
+  }
 }
 
 function capitalizeFirstCharacter(value: string): string {
