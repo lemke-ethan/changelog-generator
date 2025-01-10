@@ -147,10 +147,12 @@ export async function publish(args?: {
   }
   currentChangelogJson.entries.push(newChangeLogEntry)
 
+  if (args?.apply === true) {
   await saveChangelogJsonFile({
     projectRootDirectory,
     changeLog: currentChangelogJson
   })
+  }
 
   const initChangelog = [
     {
@@ -192,12 +194,16 @@ export async function publish(args?: {
   const jsonConverter = createJsonConverter()
   const mdChangelog = jsonConverter.toMarkdown(jsonMdChangelog)
 
+  if (args?.apply) {
   const markdownChangelogSaveResults = await saveChangelogMarkdownFile({
     projectRootDirectory,
     markdown: mdChangelog
   })
   if (markdownChangelogSaveResults) {
     console.error(markdownChangelogSaveResults)
+    }
+  } else {
+    console.log(mdChangelog)
   }
 }
 
