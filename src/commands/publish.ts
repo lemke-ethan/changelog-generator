@@ -1,6 +1,7 @@
 // Copyright 2024 MFB Technologies, Inc.
 
 import {
+  deleteChangeFiles,
   getAllLocalChangeFilePaths,
   readChangeFile
 } from "../services/changeFile.js"
@@ -198,7 +199,7 @@ export async function publish(args?: {
     projectRootDir: projectRootDirectory,
     newSemVer: getSemverString(newVersion)
   })
-  // TODO: remove the change files
+  await deleteChangeFiles({ changeFilePaths: allLocalChangeFilePaths })
 }
 
 function capitalizeFirstCharacter(value: string): string {
