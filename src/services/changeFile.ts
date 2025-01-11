@@ -2,7 +2,12 @@
 
 import path from "path"
 import { ChangeFile, isChangeFile } from "../types/changeFile.js"
-import { getFilesListInDirectory, readJson, writeJson } from "./fileSystem.js"
+import {
+  deleteFiles,
+  getFilesListInDirectory,
+  readJson,
+  writeJson
+} from "./fileSystem.js"
 import { changeFileDirectoryRoot } from "../constants.js"
 
 /** Gets all of the file paths for each local change file in a specific branch. */
@@ -89,4 +94,10 @@ function getFormattedChangeFileBranchName(branchName: string): string {
   const dashChar = "-"
   const notAlphaNumOrDashChar = new RegExp("[^a-zA-Z0-9-]")
   return branchName.split(notAlphaNumOrDashChar).join(dashChar)
+}
+
+export async function deleteChangeFiles(args: {
+  changeFilePaths: string[]
+}): Promise<void> {
+  await deleteFiles({ paths: args.changeFilePaths })
 }
