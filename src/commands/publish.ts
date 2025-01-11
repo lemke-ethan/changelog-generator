@@ -13,7 +13,8 @@ import {
 import { createJsonConverter } from "../services/markdown.js"
 import {
   getCurrentProjectName,
-  getCurrentProjectVersion
+  getCurrentProjectVersion,
+  setCurrentProjectVersion
 } from "../services/npm.js"
 import { getSemverString, parseSemver } from "../services/semver.js"
 import { changeTypeEnum } from "../types/changeFile.js"
@@ -40,23 +41,6 @@ export async function publish(args?: {
    */
   apply?: boolean
 }): Promise<void> {
-  /*
-    TODO:
-      1. get the current CHANGELOG.json, if one is not found then init it
-      1. init the new version number to the current package's version number
-      1. for each change file
-       1. load the change file into memory 
-       1. add an entry for it to the CHANGELOG.json instance in memory
-       1. using the existing version number, calculate a new version number using semver protocol 
-       and the change type from the change file
-       1. if the version number from the previous step is "smaller" than the new version number then
-       continue
-       1. otherwise, update the new version number and continue 
-      1. write the CHANGELOG.json to disk
-      1. (abstract this out) parse the CHANGELOG.json into https://www.npmjs.com/package/json2md form
-      1. overwrite/create the CHANGELOG.md with parsed json data
-      1. if `args.apply` then attempt to update the package.json version number, log an error if we fail
-  */
   // assume script is run from the root of the project
   const projectRootDirectory = process.cwd()
   const allLocalChangeFilePaths = await getAllLocalChangeFilePaths({
@@ -148,10 +132,10 @@ export async function publish(args?: {
   currentChangelogJson.entries.push(newChangeLogEntry)
 
   if (args?.apply === true) {
-  await saveChangelogJsonFile({
-    projectRootDirectory,
-    changeLog: currentChangelogJson
-  })
+    await saveChangelogJsonFile({
+      projectRootDirectory,
+      changeLog: currentChangelogJson
+    })
   }
 
   const initChangelog = [
@@ -194,17 +178,27 @@ export async function publish(args?: {
   const jsonConverter = createJsonConverter()
   const mdChangelog = jsonConverter.toMarkdown(jsonMdChangelog)
 
-  if (args?.apply) {
+  if (args?.apply !== true) {
+    console.log(mdChangelog)
+    return
+  }
+
   const markdownChangelogSaveResults = await saveChangelogMarkdownFile({
     projectRootDirectory,
     markdown: mdChangelog
   })
   if (markdownChangelogSaveResults) {
     console.error(markdownChangelogSaveResults)
-    }
-  } else {
-    console.log(mdChangelog)
   }
+  const performedVersionBump = bumpMajor || bumpMinor || bumpPatch
+  if (!performedVersionBump) {
+    return
+  }
+  await setCurrentProjectVersion({
+    projectRootDir: projectRootDirectory,
+    newSemVer: getSemverString(newVersion)
+  })
+  // remove the change files
 }
 
 function capitalizeFirstCharacter(value: string): string {
