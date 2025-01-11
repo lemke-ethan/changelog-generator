@@ -101,3 +101,13 @@ export async function writeString(args: {
     })
   })
 }
+
+/** Attempts to delete all of the files. */
+export async function deleteFiles(args: { paths: string[] }): Promise<void> {
+  const existingPaths = args.paths.filter(nodeFs.existsSync)
+  for (let i = 0; i < existingPaths.length; i++) {
+    const path = existingPaths[i]
+    if (path === undefined) continue
+    await nodeAsyncFs.rm(path)
+  }
+}
