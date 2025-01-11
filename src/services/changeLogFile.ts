@@ -19,16 +19,13 @@ export async function getChangelogJsonFile(args: {
 }): Promise<ChangeLog | ChangeLogError> {
   const fullPath = path.join(args.projectRootDirectory, changeLogJsonFileName)
   const result = await readJson(fullPath)
-  if (isChangeLog(result)) {
+  if (isChangeLog(result) || isChangeLogError(result)) {
     return result
-  } else if (isChangeLogError(result)) {
-    return result
-  } else {
-    return createChangeLogError({
-      code: changeLogErrorCodes.UNKNOWN_FILE_SYSTEM_ERROR,
-      message: "Failed to load the change log JSON file."
-    })
   }
+  return createChangeLogError({
+    code: changeLogErrorCodes.INVALID_CHANGELOG_JSON,
+    message: "Failed to parse the change log JSON file."
+  })
 }
 
 export async function createChangelogJsonFile(args: {
