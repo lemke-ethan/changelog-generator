@@ -131,6 +131,7 @@ export async function publish(args?: {
   }
   currentChangelogJson.entries.push(newChangeLogEntry)
 
+  // TODO: need to append the new changes with the existing changes, if they exist
   if (args?.apply === true) {
     await saveChangelogJsonFile({
       projectRootDirectory,
@@ -198,7 +199,7 @@ export async function publish(args?: {
     projectRootDir: projectRootDirectory,
     newSemVer: getSemverString(newVersion)
   })
-  // remove the change files
+  // TODO: remove the change files
 }
 
 function capitalizeFirstCharacter(value: string): string {
