@@ -129,7 +129,10 @@ export async function publish(args?: {
     date: new Date().toUTCString(),
     comments: allComments
   }
-  currentChangelogJson.entries.push(newChangeLogEntry)
+  currentChangelogJson.entries = [
+    newChangeLogEntry,
+    ...currentChangelogJson.entries
+  ]
 
   // TODO: need to append the new changes with the existing changes, if they exist
   if (args?.apply === true) {
