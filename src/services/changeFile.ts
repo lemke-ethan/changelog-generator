@@ -90,27 +90,3 @@ function getFormattedChangeFileBranchName(branchName: string): string {
   const notAlphaNumOrDashChar = new RegExp("[^a-zA-Z0-9-]")
   return branchName.split(notAlphaNumOrDashChar).join(dashChar)
 }
-
-async function getChangeFiles(args: {
-  // Use this to build the change file directory path
-  pathToProjectRootDirectory: string
-  // use this to check for change files associated with the current branch
-  currentBranchName: string
-}): Promise<ChangeFile[]> {
-  // TODO: is this needed?
-  /*
-    what if you are on branch A, you generate change files, merge A into your main branch, then push
-    more changes to A and run the cli?
-
-    should you see the change files for the changes you already made? or, should the changes on your
-    main branch be excluded (i.e. if the main branch has those change files already in it, then don't
-    show skips)?
-
-    https://git-scm.com/docs/git-diff
-
-    `git diff origin/main --compact-summary` can be used to list the files with their relative paths.
-    if there are no change files in that list, then we should prompt to generate some. if there are
-    one or more change files in that list then prompt with skip.
-  */
-  return []
-}

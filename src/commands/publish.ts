@@ -21,9 +21,6 @@ import { changeTypeEnum } from "../types/changeFile.js"
 import { ChangeLogEntry, ChangeLogEntryComments } from "../types/changeLog.js"
 import { isChangeLogError } from "../utils/changeLogError.js"
 
-// TODO: incorporate npm publish command
-// TODO: assume that package versions use numeric versions only
-
 /**
  * Combines all of the existing changes files into the change log and consolidates the version bumps
  * in the change files down to a single version, which is used to update the package.json version.
@@ -134,7 +131,6 @@ export async function publish(args?: {
     ...currentChangelogJson.entries
   ]
 
-  // TODO: need to append the new changes with the existing changes, if they exist
   if (args?.apply === true) {
     await saveChangelogJsonFile({
       projectRootDirectory,

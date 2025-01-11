@@ -3,8 +3,6 @@
 import { changeTypeEnum } from "../../types/changeFile"
 import { getDefaultChange } from "../change"
 
-// TODO: update tests
-
 describe(getDefaultChange.name, () => {
   it("returns the comment as an empty string", () => {
     expect(getDefaultChange("foo")).toEqual(
