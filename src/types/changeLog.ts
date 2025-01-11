@@ -2,9 +2,12 @@
 
 import { ChangeType } from "./changeFile.js"
 
+/** Represents a comment in a change log entry. */
+export type ChangeLogEntryComment = { comment: string }
+
 /** Represents a collection of comments in a change log entry. */
 export type ChangeLogEntryComments = {
-  [Property in ChangeType]?: { comment: string }[]
+  [Property in ChangeType]?: ChangeLogEntryComment[]
 }
 
 /** Represents an entry in the change log. */

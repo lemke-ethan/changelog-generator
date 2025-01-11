@@ -4,8 +4,20 @@ import { changeTypeEnum } from "./changeFile.js"
 import {
   ChangeLog,
   ChangeLogEntry,
+  ChangeLogEntryComment,
   ChangeLogEntryComments
 } from "./changeLog.js"
+
+export function isChangeLogEntryComment(
+  obj: unknown
+): obj is ChangeLogEntryComment {
+  return (
+    typeof obj === "object" &&
+    obj !== null &&
+    "comment" in obj &&
+    typeof obj.comment === "string"
+  )
+}
 
 export function isChangeLogEntryComments(
   obj: unknown
@@ -17,11 +29,7 @@ export function isChangeLogEntryComments(
       Object.values<string>(changeTypeEnum).includes(key)
     ) &&
     Object.values(obj).every(
-      value =>
-        typeof value === "object" &&
-        value !== null &&
-        "comment" in value &&
-        typeof value.comment === "string"
+      value => Array.isArray(value) && value.every(isChangeLogEntryComment)
     )
   )
 }
