@@ -13,20 +13,22 @@ export async function readJson(
   path: string
 ): Promise<Record<string, unknown> | ChangeLogError> {
   return new Promise(resolve => {
-    nodeFs.readFile(path, { encoding: "utf8" }, (error, data) => {
-      if (error !== null) {
-        if (error.message.includes("no such file or directory")) {
+    nodeFs.readFile(path, { encoding: "utf8" }, (err, data) => {
+      if (err !== null) {
+        if (err.message.includes("no such file or directory")) {
           resolve(
             createChangeLogError({
               code: changeLogErrorCodes.NO_SUCH_FILE_OR_DIRECTORY,
-              message: error.message
+              message: err.message,
+              cause: err
             })
           )
         } else {
           resolve(
             createChangeLogError({
               code: changeLogErrorCodes.UNKNOWN_FILE_SYSTEM_ERROR,
-              message: error.message
+              message: err.message,
+              cause: err
             })
           )
         }
