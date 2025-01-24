@@ -50,13 +50,11 @@ export async function change(args?: {
   // assume script is run from the root of the project
   const projectRootDirectory = process.cwd()
   const projectName = await getCurrentProjectName(projectRootDirectory)
-  // TODO: what does the response look like when there are no changes?
   const gitChanges = await getCompactChangeSummary({
     currentBranchName,
     remoteName,
     targetBranch: headBranchName
   })
-  console.log(gitChanges)
   const localChangeFileFullPaths = await getBranchesChangeFiles({
     targetBranchName: currentBranchName,
     projectRootDir: projectRootDirectory
