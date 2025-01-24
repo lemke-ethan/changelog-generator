@@ -56,6 +56,7 @@ export async function change(args?: {
     remoteName,
     targetBranch: headBranchName
   })
+  console.log(gitChanges)
   const localChangeFileFullPaths = await getBranchesChangeFiles({
     targetBranchName: currentBranchName,
     projectRootDir: projectRootDirectory
