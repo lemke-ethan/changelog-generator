@@ -2,8 +2,23 @@
 
 import jsonToMd from "json2md"
 
+export type MarkdownJson = (
+  | {
+      h1: string
+      p: string
+    }
+  | {
+      h3: string
+      ul: string[]
+    }
+  | {
+      h2: string
+      p: string
+    }
+)[]
+
 export function createJsonConverter(): {
-  toMarkdown: (value: Record<string, unknown>[]) => string
+  toMarkdown: (value: MarkdownJson) => string
 } {
   // fix the lint errors with unordered list items
   jsonToMd.converters.ul = inputs => {
@@ -14,7 +29,6 @@ export function createJsonConverter(): {
   }
 }
 
-// TODO: fix the typing
-function convertToMarkdown(value: Record<string, unknown>[]): string {
+function convertToMarkdown(value: MarkdownJson): string {
   return jsonToMd(value)
 }
